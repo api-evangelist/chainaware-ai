@@ -1,0 +1,94 @@
+generated: '2026-09-19'
+method: searched
+source: https://api.chainaware.ai/.well-known/agent-card.json
+derived_from: openapi/chainaware-ai-enterprise-api-openapi.yml
+docs:
+- https://chainaware.ai/learn/api/index.html
+- https://chainaware.ai/learn/prediction-mcp/index.html
+- https://chainaware.ai/learn/agent-trust-score.html
+- https://chainaware.ai/terms/
+summary: >-
+  ChainAware's conformance profile is the agent-commerce stack plus one market-specific identifier scheme,
+  not an enterprise or sector standard: an A2A 0.3.0 agent card with the x402 extension, a hosted MCP server at
+  protocol 2025-03-26, JSON-RPC 2.0 on both, a live x402 v2 HTTP 402 challenge settled in USDC on Base
+  (CAIP-2 eip155:8453) verified on the wire, and ERC-8004 agent identity (agent_id + chain_id, the Identity
+  Registry's key) as the input contract of two MCP tools. It declares no OAuth/OIDC, no RFC 9457 problem
+  details, no RFC 9116 security.txt, no RFC 9727 API catalog and no RFC 8594 sunset signalling. The
+  "MiCA-aligned" language on the compliance product pages is a marketing claim about what the product helps a
+  customer do, not a conformance the API contract declares, and is recorded as not asserted.
+standards:
+- id: a2a
+  name: Agent2Agent protocol
+  version: '0.3.0'
+  conforms: true
+  evidence: a2a/chainaware-ai-agent-card.json — protocolVersion "0.3.0", preferredTransport JSONRPC, capabilities object, skills[] of 5, served at api.chainaware.ai/.well-known/agent-card.json (200, application/json); POST https://api.chainaware.ai/api/a2a/ message/send returned a JSON-RPC result shaped as an A2A Message. Graded conformant in a2a/chainaware-ai-a2a.yml, with the declared url off by a trailing slash and tasks/get unimplemented recorded as deviations.
+- id: a2a-x402-extension
+  name: x402 extension for A2A
+  version: v1
+  conforms: true
+  evidence: 'a2a/chainaware-ai-agent-card.json capabilities.extensions[0].uri = https://x402.org/extension/v1, required false, params {protocol: x402, scheme: exact, currency: USDC, network: eip155:8453, pricePerCall: $0.15, detailsUrl: https://api.chainaware.ai/api/capabilities}; securitySchemes.x402Payment is an apiKey-in-header scheme named X-PAYMENT.'
+  domain_standard_signature: true
+  note: The card declares the extension URI itself — the contract-level agent-commerce signature. Optional rather than required because an x-api-key is an alternative credential.
+- id: x402
+  name: x402 HTTP payment protocol
+  version: '2'
+  conforms: true
+  verification: observed
+  evidence: 'POST https://api.chainaware.ai/api/fraud/check without credentials returned HTTP 402 with a `payment-required` header whose base64 body decodes to {x402Version: 2, error: "Payment required", resource: {url, description, mimeType}, accepts: [{scheme: exact, network: eip155:8453, amount: "150000", asset: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, payTo: 0x9e60Ca8606b39533B9E1bC460f6d0C92c16CeA08, maxTimeoutSeconds: 300, extra: {name: USD Coin, version: "2"}}], extensions: {bazaar: {...}}} — saved decoded to a2a/chainaware-ai-x402-payment-required.json. Discovery documents at mcp.chainaware.ai/.well-known/x402.json and prediction.mcp.chainaware.ai/.well-known/x402.json ({"x402": true, "backend": "https://api.chainaware.ai"}).'
+  note: The 402 challenge and its PaymentRequirements payload were both observed; no payment was made and no paid response was inspected. The asset address is the canonical USDC contract on Base and the amount (6 decimals) matches the card's $0.15.
+- id: mcp
+  name: Model Context Protocol
+  version: '2025-03-26'
+  conforms: true
+  evidence: 'GET https://prediction.mcp.chainaware.ai/sse opened an SSE stream with an endpoint event; initialize returned protocolVersion "2025-03-26", serverInfo {ChainAwareMCP, 1.11.0}; tools/list returned 14 tools with inputSchema (10 with outputSchema). Legacy HTTP+SSE transport, not Streamable HTTP (/mcp 404). See mcp/chainaware-ai-mcp.yml.'
+- id: json-rpc-2.0
+  conforms: true
+  evidence: Both the MCP messages endpoint and /api/a2a/ answer {"jsonrpc":"2.0", ...}. Unimplemented A2A methods are answered with an HTTP 404 rather than a JSON-RPC -32601, which is a transport-level shortcut recorded in a2a/.
+- id: caip-2
+  name: CAIP-2 chain identifier
+  conforms: true
+  evidence: eip155:8453 (Base) in the agent card extension params, the /api/capabilities pricing blocks and the live x402 PaymentRequirements.
+- id: erc-8004
+  name: ERC-8004 Trustless Agents (Identity Registry)
+  conforms: true
+  verification: contract-declared
+  evidence: 'mcp/chainaware-ai-mcp-tools.json — agents_trust_score_single inputSchema requires agent_id (integer) and chain_id (integer), the ERC-8004 Identity Registry key; agents_trust_score_list returns registry fields (owner_address, agent_wallet, agent_uri, registered_at, metadata_json.supportedTrust) per https://chainaware.ai/learn/prediction-mcp/tool-agents-trust-score-single.html. The Agent Trust Score product page states 377,608 ERC-8004 agents indexed.'
+  domain_standard_signature: true
+  note: A market-specific identifier scheme declared in the tool contract itself — an agent that already speaks ERC-8004 identities can call these tools with no bespoke mapping. ChainAware is a consumer/scorer of the registry, not an implementer of the registry contracts.
+- id: sse
+  name: Server-Sent Events (WHATWG)
+  conforms: true
+  evidence: 'GET /sse returned text/event-stream with event: endpoint / event: message frames; the messages endpoint acknowledges with 202 Accepted.'
+- id: api-key-header
+  name: API key in a custom request header
+  conforms: true
+  evidence: openapi/chainaware-ai-enterprise-api-openapi.yml components.securitySchemes.ApiKeyAuth (apiKey, header, x-api-key), global security; agent card securitySchemes.apiKey (x-api-key); MCP X-API-Key header / apiKey argument.
+- id: oauth2
+  conforms: false
+  evidence: No oauth2 or openIdConnect securityScheme in the OpenAPI or the agent card; /.well-known/oauth-authorization-server, /.well-known/openid-configuration and /.well-known/oauth-protected-resource 404 on api.chainaware.ai and both MCP hosts.
+- id: rfc9728-protected-resource-metadata
+  conforms: false
+  evidence: /.well-known/oauth-protected-resource returns 404 on mcp.chainaware.ai, prediction.mcp.chainaware.ai and api.chainaware.ai.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: Error responses in the OpenAPI declare no schema and no application/problem+json media type; the observed 402 body is {} and the 404 body is {"error":"Not found"}.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt is a 404 on every resolving host except the SPA catch-all (see well-known/).
+- id: rfc9727-api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog 404 (or SPA shell) on every host.
+- id: apis-json
+  conforms: false
+  evidence: /apis.json, /.well-known/apis.json and /apis.yml return the SPA shell on chainaware.ai and 404/403 elsewhere.
+- id: rfc8594-sunset
+  conforms: false
+  evidence: No Sunset or Deprecation header documented; no deprecation policy page; zero operations marked deprecated.
+- id: rate-limit-headers
+  conforms: false
+  evidence: 429 "Rate limit exceeded" is declared on every operation but no RateLimit-*/X-RateLimit-*/Retry-After header is documented (rate-limits/chainaware-ai-rate-limits.yml).
+- id: mica
+  name: EU Markets in Crypto-Assets Regulation
+  conforms: null
+  asserted: false
+  evidence: 'Product pages (https://chainaware.ai/learn/compliance-for-defi/index.html, /transaction-monitoring) describe "MiCA-aligned" AML screening and "MiCA obligations" as a customer outcome; the Terms state the Business Client''s own compliance function retains sole responsibility for all compliance decisions. This is a marketing/positioning claim, not a declared conformance of the API contract, and is deliberately NOT recorded as conforms: true.'

@@ -1,0 +1,831 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  Live GET probes of the closed /.well-known/* path list (plus agent-card, agent.json, x402 and llms.txt) on seven
+  hosts, 2026-09-19. Every row is a request that was issued; every status is the one returned.
+summary:
+  hosts_probed: 7
+  hosts_resolving: 6
+  paths_probed: 133
+  documents_served: 7
+  hit_count: 7
+  note: >-
+    Four real documents across two hosts, none of them on the primary domain: the A2A agent card on api.chainaware.ai
+    at both /.well-known/agent-card.json and the legacy /.well-known/agent.json (10,778 bytes, identical), and an
+    x402 discovery document on the MCP hosts at /.well-known/x402 and /.well-known/x402.json (185 bytes, identical
+    on mcp.chainaware.ai and prediction.mcp.chainaware.ai). Plus chainaware.ai/llms.txt (text/plain, real) which
+    is indexed under llms/. NOT served anywhere: security.txt, OpenID/OAuth discovery, RFC 9728 protected-resource
+    metadata on the MCP resource host, RFC 9727 api-catalog, APIs.json (/apis.json, /.well-known/apis.json, /apis.yml),
+    ai-plugin.json, UCP/ACP, AAuth. The primary domain chainaware.ai is an SPA catch-all (200 + the same 7,355-byte
+    shell for every path including a negative control), so its rows are recorded under catch_all_host with hit:
+    false rather than counted; enterprise.api.chainaware.ai answers 403 to everything anonymous. The WellKnown pointer
+    is emitted because api.chainaware.ai and the MCP hosts serve real documents; no SecurityTxt pointer is emitted.
+hosts:
+- host: api.chainaware.ai
+  role: A2A / x402 API host (Express behind CloudFront)
+  negative_control:
+    path: /.well-known/chainaware-ai-negative-control-8b98772f.json
+    status: 404
+    bytes: 10
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    content_type: text/plain; charset=UTF-8
+    bytes: 10
+    hit: false
+  - path: /security.txt
+    status: 404
+    content_type: text/html; charset=iso-8859-1
+    bytes: 236
+    hit: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    bytes: 10
+    hit: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    bytes: 10
+    hit: false
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    bytes: 10
+    hit: false
+  - path: /.well-known/api-catalog
+    status: 404
+    bytes: 10
+    hit: false
+  - path: /.well-known/api-catalog.json
+    status: 404
+    content_type: application/json
+    bytes: 10
+    hit: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    content_type: application/json
+    bytes: 10
+    hit: false
+  - path: /.well-known/ucp.json
+    status: 404
+    content_type: application/json
+    bytes: 10
+    hit: false
+  - path: /.well-known/acp.json
+    status: 404
+    content_type: application/json
+    bytes: 10
+    hit: false
+  - path: /.well-known/aauth-resource.json
+    status: 404
+    content_type: application/json
+    bytes: 10
+    hit: false
+  - path: /.well-known/apis.json
+    status: 404
+    content_type: application/json
+    bytes: 10
+    hit: false
+  - path: /apis.json
+    status: 404
+    content_type: text/html; charset=iso-8859-1
+    bytes: 236
+    hit: false
+  - path: /apis.yml
+    status: 404
+    content_type: text/html; charset=iso-8859-1
+    bytes: 236
+    hit: false
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    bytes: 10778
+    file: ../a2a/chainaware-ai-agent-card.json
+    hit: true
+    standard: A2A Agent Card (protocolVersion 0.3.0); graded conformant in a2a/chainaware-ai-a2a.yml
+  - path: /.well-known/agent.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    bytes: 10778
+    file: ../a2a/chainaware-ai-agent-card.json
+    hit: true
+    standard: A2A Agent Card (protocolVersion 0.3.0); graded conformant in a2a/chainaware-ai-a2a.yml
+    note: Legacy pre-0.3 path; identical body to agent-card.json.
+  - path: /.well-known/x402
+    status: 404
+    bytes: 10
+    hit: false
+  - path: /.well-known/x402.json
+    status: 404
+    content_type: application/json
+    bytes: 10
+    hit: false
+  - path: /llms.txt
+    status: 404
+    content_type: text/html; charset=iso-8859-1
+    bytes: 236
+    hit: false
+  path_echo_control: passed
+- host: enterprise.api.chainaware.ai
+  role: Enterprise REST API host (OpenAPI servers[]; AWS API Gateway)
+  negative_control:
+    path: /.well-known/chainaware-ai-negative-control-5d6f0530.json
+    status: 403
+    bytes: 42
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /security.txt
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/openid-configuration
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/oauth-protected-resource
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/api-catalog
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/api-catalog.json
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/ai-plugin.json
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/ucp.json
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/acp.json
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/aauth-resource.json
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/apis.json
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /apis.json
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /apis.yml
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/agent-card.json
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/agent.json
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/x402
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /.well-known/x402.json
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  - path: /llms.txt
+    status: 403
+    content_type: application/json
+    bytes: 42
+    hit: false
+    note: >-
+      HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge for every anonymous path, well-known or not.
+      Not a document and not a 404: the host answers nothing without a key.
+  path_echo_control: passed
+- host: swagger.chainaware.ai
+  role: API reference host (Swagger UI)
+  negative_control:
+    path: /.well-known/chainaware-ai-negative-control-34af46ce.json
+    status: 404
+    bytes: 391
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 379
+    hit: false
+  - path: /security.txt
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 367
+    hit: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 367
+    hit: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 373
+    hit: false
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 371
+    hit: false
+  - path: /.well-known/api-catalog
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 358
+    hit: false
+  - path: /.well-known/api-catalog.json
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 383
+    hit: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 361
+    hit: false
+  - path: /.well-known/ucp.json
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 375
+    hit: false
+  - path: /.well-known/acp.json
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 355
+    hit: false
+  - path: /.well-known/aauth-resource.json
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 366
+    hit: false
+  - path: /.well-known/apis.json
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 356
+    hit: false
+  - path: /apis.json
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 364
+    hit: false
+  - path: /apis.yml
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 363
+    hit: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 362
+    hit: false
+  - path: /.well-known/agent.json
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 357
+    hit: false
+  - path: /.well-known/x402
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 351
+    hit: false
+  - path: /.well-known/x402.json
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 376
+    hit: false
+  - path: /llms.txt
+    status: 404
+    content_type: text/html; charset=utf-8
+    bytes: 363
+    hit: false
+  path_echo_control: passed
+- host: mcp.chainaware.ai
+  role: MCP server host (alias)
+  negative_control:
+    path: /.well-known/chainaware-ai-negative-control-68d5edb1.json
+    status: 404
+    bytes: 9
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /security.txt
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+    note: RFC 9728 protected-resource metadata is NOT served on the MCP resource host.
+  - path: /.well-known/api-catalog
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/api-catalog.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/ucp.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/acp.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/aauth-resource.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/apis.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /apis.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /apis.yml
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/agent.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/x402
+    status: 200
+    content_type: application/json
+    bytes: 185
+    file: chainaware-ai-x402.json
+    hit: true
+    standard: >-
+      x402 payment discovery document (non-IETF; {"x402": true, "backend": "https://api.chainaware.ai", "documentation":
+      "https://chainaware.ai/x402-payment"})
+  - path: /.well-known/x402.json
+    status: 200
+    content_type: application/json
+    bytes: 185
+    file: chainaware-ai-x402.json
+    hit: true
+    standard: >-
+      x402 payment discovery document (non-IETF; {"x402": true, "backend": "https://api.chainaware.ai", "documentation":
+      "https://chainaware.ai/x402-payment"})
+  - path: /llms.txt
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  path_echo_control: passed
+- host: prediction.mcp.chainaware.ai
+  role: MCP server host (canonical, per docs + MCP registry)
+  negative_control:
+    path: /.well-known/chainaware-ai-negative-control-8ebbf196.json
+    status: 404
+    bytes: 9
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /security.txt
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+    note: RFC 9728 protected-resource metadata is NOT served on the MCP resource host.
+  - path: /.well-known/api-catalog
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/api-catalog.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/ucp.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/acp.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/aauth-resource.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/apis.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /apis.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /apis.yml
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/agent.json
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  - path: /.well-known/x402
+    status: 200
+    content_type: application/json
+    bytes: 185
+    file: chainaware-ai-x402.json
+    hit: true
+    standard: >-
+      x402 payment discovery document (non-IETF; {"x402": true, "backend": "https://api.chainaware.ai", "documentation":
+      "https://chainaware.ai/x402-payment"})
+  - path: /.well-known/x402.json
+    status: 200
+    content_type: application/json
+    bytes: 185
+    file: chainaware-ai-x402.json
+    hit: true
+    standard: >-
+      x402 payment discovery document (non-IETF; {"x402": true, "backend": "https://api.chainaware.ai", "documentation":
+      "https://chainaware.ai/x402-payment"})
+  - path: /llms.txt
+    status: 404
+    content_type: text/plain; charset=utf-8
+    bytes: 9
+    hit: false
+  path_echo_control: passed
+catch_all_host:
+  host: chainaware.ai
+  role: Website / primary domain — Angular SPA, catch-all router
+  negative_control:
+    path: /.well-known/chainaware-ai-negative-control-7852a6b7.json
+    status: 200
+    bytes: 7355
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /security.txt
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/api-catalog
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/api-catalog.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/ucp.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/acp.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/aauth-resource.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/apis.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /apis.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /apis.yml
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/agent.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/x402
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /.well-known/x402.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    hit: false
+    note: SPA shell (same 7,355-byte HTML as the site root and the negative control) — not a document.
+  - path: /llms.txt
+    status: 200
+    content_type: text/plain; charset=UTF-8
+    bytes: 8046
+    file: ../llms/chainaware-ai-llms.txt
+    hit: true
+    note: A real text/plain llms.txt — the one path on this host that is not the SPA shell.
+  catch_all: true
+  path_echo_control: n/a
+  soft_404_control:
+    url: https://chainaware.ai/.well-known/chainaware-ai-negative-control-7852a6b7.json
+    status: 200
+    content_type: text/html;charset=UTF-8
+    bytes: 7355
+    note: >-
+      Control probe of a path that cannot exist returned the identical SPA shell. Every 200 on this host with this
+      byte count is the catch-all page, NOT a served document; the rows below are marked hit: false accordingly
+      and the only real hit on this host is /llms.txt (text/plain, 8,046 bytes).
+unresolved_host:
+  host: www.chainaware.ai
+  role: www — does not resolve (NXDOMAIN)
+  negative_control:
+    path: /.well-known/chainaware-ai-negative-control-e2071c27.json
+    status: null
+    bytes: null
+  documents:
+  - path: /.well-known/security.txt
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /security.txt
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/openid-configuration
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/oauth-authorization-server
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/oauth-protected-resource
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/api-catalog
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/api-catalog.json
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/ai-plugin.json
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/ucp.json
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/acp.json
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/aauth-resource.json
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/apis.json
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /apis.json
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /apis.yml
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/agent-card.json
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/agent.json
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/x402
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /.well-known/x402.json
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false
+  - path: /llms.txt
+    status: null
+    error: 'DNS: host does not resolve'
+    hit: false

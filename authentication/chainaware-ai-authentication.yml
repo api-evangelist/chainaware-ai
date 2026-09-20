@@ -1,0 +1,82 @@
+generated: '2026-09-19'
+method: searched
+source: openapi/chainaware-ai-enterprise-api-openapi.yml
+docs: https://chainaware.ai/learn/api/index.html
+additional_docs:
+- https://chainaware.ai/learn/prediction-mcp/setup.html
+- https://api.chainaware.ai/.well-known/agent-card.json
+- https://github.com/ChainAware/behavioral-prediction-mcp
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+  - query (MCP SSE URL only)
+  - tool argument (MCP, in-band)
+  payment_credential:
+  - x402 (X-PAYMENT header, USDC on Base)
+  oauth2: false
+  openid_connect: false
+  mutual_tls: false
+  key_issuance: https://chainaware.ai/profile (Business or Enterprise subscription; "custom volume pricing" by contact)
+  anonymous_access: 'discovery on every surface (agent card, /api/capabilities, MCP initialize + tools/list); eight MCP tools callable with no key; website tools free'
+schemes:
+- name: ApiKeyAuth
+  type: apiKey
+  in: header
+  parameter: x-api-key
+  surface: REST Enterprise API (https://enterprise.api.chainaware.ai) and the x402 REST twin at https://api.chainaware.ai/api/*
+  description: Your ChainAware API key. Available at chainaware.ai/profile. Keep it private — do not expose it in client-side code or public repositories.
+  failure: 'Docs: 401 Unauthorized when missing or invalid. Observed: a request with NO key to enterprise.api.chainaware.ai is answered 403 {"message":"Forbidden"} by the AWS API Gateway edge before the application sees it.'
+  sources:
+  - openapi/chainaware-ai-enterprise-api-openapi.yml
+  - https://chainaware.ai/learn/api/index.html
+- name: apiKey (A2A card)
+  type: apiKey
+  in: header
+  parameter: x-api-key
+  surface: A2A skills at https://api.chainaware.ai/api/a2a/
+  description: 'API key for authenticated access. Obtain your key at https://chainaware.ai/pricing.'
+  sources:
+  - a2a/chainaware-ai-agent-card.json
+- name: x402Payment
+  type: apiKey
+  in: header
+  parameter: X-PAYMENT
+  surface: A2A skills and https://api.chainaware.ai/api/* (and MCP tool calls when apiKey is omitted, per the README)
+  description: 'x402 micropayment header. See https://x402.org for payment construction details. An unpaid request returns HTTP 402 with a base64 `payment-required` header (x402 v2 PaymentRequirements: exact scheme, eip155:8453, 150000 units of USDC 0x8335…2913 = $0.15, payTo 0x9e60…CeA08, 300 s validity).'
+  evidence: a2a/chainaware-ai-x402-payment-required.json
+  sources:
+  - a2a/chainaware-ai-agent-card.json
+  - https://api.chainaware.ai/api/capabilities
+- name: X-API-Key (MCP connection header)
+  type: apiKey
+  in: header
+  parameter: X-API-Key
+  surface: MCP SSE connection to https://prediction.mcp.chainaware.ai/sse (Claude Code `--header`, Cursor `headers`, SDK requestInit)
+  description: Documented connection-level key; the connection, initialize and tools/list nevertheless succeed without it.
+  sources:
+  - https://chainaware.ai/learn/prediction-mcp/setup.html
+  - mcp/chainaware-ai-mcp.yml
+- name: apiKey (MCP SSE query parameter)
+  type: apiKey
+  in: query
+  parameter: apiKey
+  surface: 'MCP SSE URL for ChatGPT Connectors and Claude Web/Desktop Integrations: https://prediction.mcp.chainaware.ai/sse?apiKey=YOUR_API_KEY'
+  description: The setup guide documents the key in the URL for clients that cannot set headers. A key in a URL is logged by intermediaries; the guide does not warn about this.
+  sources:
+  - https://chainaware.ai/learn/prediction-mcp/setup.html
+- name: apiKey (MCP tool argument)
+  type: apiKey
+  in: tool-argument
+  parameter: apiKey
+  surface: 'Six MCP tools: predictive_fraud, predictive_fraud_batch, predictive_behaviour, predictive_behaviour_batch, predictive_rug_pull, credit_score (required inputSchema property)'
+  description: 'The credential travels INSIDE the JSON-RPC tool call, visible to the model. SKILL.md: "Passed as the apiKey parameter in every tool call ... Never logged or included in output. Sourced exclusively from the CHAINAWARE_API_KEY environment variable — never hardcoded." Omit it to pay with x402 instead (README). Failure: 403 "invalid or missing apiKey" as tool-result text.'
+  sources:
+  - mcp/chainaware-ai-mcp-tools.json
+  - skills/chainaware-ai-SKILL.md
+note: >-
+  One credential (a ChainAware API key) presented five ways across three surfaces, plus x402 payment as a
+  credential-free alternative on the agent surfaces. No OAuth 2.0, OIDC, scopes or client registration exist,
+  and no RFC 8414 / 9728 discovery document is served on any host (see well-known/). Keys are per account with
+  no documented test/live prefix, rotation or expiry.

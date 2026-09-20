@@ -64,5 +64,20 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-ChainAware.ai is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry) and added to the network as a stub for full-pipeline profiling.
-- https://chainaware.ai/
+ChainAware.ai is an AI-powered blockchain intelligence platform (operated by Decentral Tech OÜ, Estonia) that
+scores wallets, tokens, smart contracts and ERC-8004 AI agents for fraud, rug-pull, credit and trust risk
+across eight blockchains. This profile covers its three public machine surfaces:
+
+- **Enterprise REST API** — five POST operations on `https://enterprise.api.chainaware.ai`, published as
+  Swagger 2.0 at https://swagger.chainaware.ai/swagger.json (saved verbatim under `openapi/_original/`, converted
+  to OpenAPI 3.0.3 in `openapi/`), `x-api-key` auth, Business/Enterprise subscriptions.
+- **Behavioural Prediction MCP Server** — hosted SSE server at `https://prediction.mcp.chainaware.ai/sse`
+  (14 tools; anonymous `tools/list` saved to `mcp/chainaware-ai-mcp-tools.json`; MIT source on GitHub; listed in the
+  official MCP registry).
+- **A2A agent card + x402 API** — `https://api.chainaware.ai/.well-known/agent-card.json` (A2A 0.3.0, five
+  skills, graded conformant in `a2a/`), paid per call with x402 (USDC on Base, $0.15) or an API key; a live 402
+  challenge is saved decoded in `a2a/`.
+
+- Website: https://chainaware.ai/
+- Docs: https://chainaware.ai/learn/
+- API reference: https://swagger.chainaware.ai/

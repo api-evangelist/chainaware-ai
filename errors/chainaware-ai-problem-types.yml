@@ -1,0 +1,73 @@
+generated: '2026-09-19'
+method: searched
+format: json
+source: openapi/chainaware-ai-enterprise-api-openapi.yml
+docs:
+- https://chainaware.ai/learn/api/index.html
+- https://chainaware.ai/learn/prediction-mcp/setup.html
+- https://github.com/ChainAware/behavioral-prediction-mcp
+summary: >-
+  The Enterprise API declares six status codes on every one of its five operations (200, 400, 401, 404, 429,
+  500) with a one-line description each and NO response schema for any error — the only documented body shape
+  is the success envelope, whose first field is always "message": "Success". The docs error table repeats the
+  same six codes. The MCP server's documented error set is different (403 for a bad apiKey rather than 401,
+  402 Payment Required when paying by x402) and is delivered as tool-result text, not HTTP status. Observed
+  live: HTTP 403 {"message":"Forbidden"} from the API Gateway edge on enterprise.api.chainaware.ai without a
+  key (undocumented — the docs promise 401), HTTP 402 with an empty {} body and a payment-required header on
+  api.chainaware.ai, and HTTP 404 {"error":"Not found"} for unrouted paths on api.chainaware.ai. Nothing is
+  RFC 9457.
+envelope:
+  success: '{"message": "Success", ...endpoint payload}'
+  error_rest: 'undocumented — no schema declared for 4xx/5xx in the contract'
+  error_api_host: '{"error": "<text>"} (observed on api.chainaware.ai 404s); {} with a payment-required header on 402'
+  error_gateway: '{"message": "Forbidden"} (observed on enterprise.api.chainaware.ai 403; x-amzn-errortype: ForbiddenException)'
+problems:
+- status: 400
+  title: Bad request
+  detail: Missing or invalid fields in the request body — wrong network identifier or malformed walletAddress/contract address.
+  remediation: Send network as one of the operation's enum values (uppercase ETH/BNB/POLYGON/TON/BASE/TRON/HAQQ for fraud, ETH/BNB/BASE/HAQQ/SOLANA for audit) and a valid address; note the overview page lists lowercase ids (ethereum, bsc, polygon…) that contradict the Swagger enum.
+  source_operations: [checkWalletFraud, auditWalletBehaviour, checkRugPull, getWalletSegment, getCreditScore]
+  mcp_equivalent: 400 Bad Request — malformed network or walletAddress (tool-result text)
+- status: 401
+  title: Unauthorised
+  detail: API key missing or invalid (x-api-key header).
+  remediation: Obtain a key at chainaware.ai/profile (Business or Enterprise subscription) and send it as x-api-key on every request.
+  source_operations: [checkWalletFraud, auditWalletBehaviour, checkRugPull, getWalletSegment, getCreditScore]
+  observed: Anonymous requests to enterprise.api.chainaware.ai actually receive HTTP 403 {"message":"Forbidden"} from the AWS API Gateway edge before reaching the application; the documented 401 was not observed.
+  mcp_equivalent: 403 Unauthorized — invalid or missing apiKey argument (the MCP docs and README use 403, not 401)
+- status: 402
+  title: Payment required (x402)
+  detail: On api.chainaware.ai/api/* without an x-api-key or a valid X-PAYMENT header. Body is {}; the payment terms travel in the base64 `payment-required` response header (x402 v2 PaymentRequirements).
+  remediation: An x402-capable client decodes the header, pays 0.15 USDC on Base (eip155:8453) to the payTo address within maxTimeoutSeconds (300) and retries with X-PAYMENT; or send an x-api-key instead.
+  source_operations: []
+  surfaces: [a2a skills, x402 REST at api.chainaware.ai/api/*, MCP tools when apiKey is omitted]
+  evidence: a2a/chainaware-ai-x402-payment-required.json
+- status: 403
+  title: Forbidden (edge)
+  detail: '{"message":"Forbidden"} from CloudFront/API Gateway on enterprise.api.chainaware.ai for any request without a recognised key — including /.well-known/* and the API root.'
+  remediation: Same as 401 — this is what a missing key actually produces on the enterprise host.
+  source_operations: []
+  documented: false
+- status: 404
+  title: Wallet or contract not found
+  detail: The address has no profile on the requested network ("Wallet not found" on wallet operations, "Contract not found" on /rug/pull-check).
+  remediation: Check the network matches where the address is active; a brand-new address may instead return status "New Address" with a 200.
+  source_operations: [checkWalletFraud, auditWalletBehaviour, checkRugPull, getWalletSegment, getCreditScore]
+- status: 429
+  title: Rate limit exceeded
+  detail: Declared on every operation; no limit numbers, window or headers are published.
+  remediation: Back off and retry; the provider documents no Retry-After. See rate-limits/chainaware-ai-rate-limits.yml.
+  source_operations: [checkWalletFraud, auditWalletBehaviour, checkRugPull, getWalletSegment, getCreditScore]
+- status: 500
+  title: Internal server error
+  detail: Temporary downstream failure.
+  remediation: Retry after a short delay (the MCP tool docs say so explicitly).
+  source_operations: [checkWalletFraud, auditWalletBehaviour, checkRugPull, getWalletSegment, getCreditScore]
+mcp_tool_result_errors:
+  note: MCP tool failures arrive as text in the tool result, not as HTTP statuses on the SSE transport. Per the README and per-tool docs.
+  codes:
+  - {code: 400, meaning: malformed network or address list}
+  - {code: 402, meaning: x402 payment required — compatible clients settle automatically}
+  - {code: 403, meaning: invalid or missing apiKey (not applicable when paying by x402)}
+  - {code: 500, meaning: temporary backend failure — retry after a short delay}
+  batch_semantics: check_job_status reports counts of completed / failed / pending items; a job can end "partial", and get_job_results must not be called while status is pending or processing.

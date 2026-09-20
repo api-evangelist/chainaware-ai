@@ -1,0 +1,31 @@
+generated: '2026-09-19'
+method: searched
+source: openapi/chainaware-ai-enterprise-api-openapi.yml
+docs:
+- https://chainaware.ai/learn/api/index.html
+- https://github.com/ChainAware/behavioral-prediction-mcp
+- https://mcp.chainaware.ai/
+limit_count: 0
+summary: >-
+  ChainAware declares that rate limiting exists but publishes no number, window, scope or header for it. Every
+  Enterprise API operation declares a 429 "Rate limit exceeded" response with no schema and no headers; the
+  docs error table repeats the code; the MCP README says only "Rate limits may apply depending on usage tier".
+  No RateLimit-*, X-RateLimit-* or Retry-After header is documented and none could be observed without a key
+  (anonymous requests stop at the API Gateway edge with 403). What IS published is a set of size and time
+  limits on the MCP batch and x402 surfaces, recorded below.
+rate_limits: []
+exhaustion:
+  status: 429
+  headers: []
+  media_type: application/json (error body undocumented)
+  documented_on: [checkWalletFraud, auditWalletBehaviour, checkRugPull, getWalletSegment, getCreditScore]
+  note: 'Declared in the contract and the docs; numbers and headers absent; tier-dependent per the README.'
+size_and_time_limits:
+- {name: Wallets per batch job, limit: 1000, applies_to: [predictive_fraud_batch, predictive_behaviour_batch], source: 'https://mcp.chainaware.ai/ — "Schedule fraud analysis for up to 1 000 wallets"'}
+- {name: Batch job minimum, limit: '5+ wallets', applies_to: [predictive_fraud_batch, predictive_behaviour_batch], source: 'repository llms.txt — "Async batch fraud screening for 5+ wallets"'}
+- {name: x402 payment validity window, limit: '300 seconds (maxTimeoutSeconds)', applies_to: ['POST https://api.chainaware.ai/api/*'], source: a2a/chainaware-ai-x402-payment-required.json}
+- {name: Agent trust list page size default, limit: 'limit default 5, page default 1', applies_to: [agents_trust_score_list], source: mcp/chainaware-ai-mcp-tools.json}
+- {name: Stated latency, limit: 'under 100 ms per call', applies_to: [checkWalletFraud, getCreditScore, predictive_fraud], source: 'https://chainaware.ai/learn/api/credit-scoring-api.html — "Response latency: under 100ms"', note: a performance statement, not a limit}
+probes:
+- {url: 'https://enterprise.api.chainaware.ai/fraud/check', method: POST, status: 403, note: 'anonymous; {"message":"Forbidden"} from API Gateway — no rate-limit headers reachable without a key'}
+- {url: 'https://api.chainaware.ai/api/fraud/check', method: POST, status: 402, note: 'anonymous; payment-required header only, no rate-limit headers'}

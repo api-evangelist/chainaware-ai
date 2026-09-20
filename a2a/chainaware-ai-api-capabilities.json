@@ -1,0 +1,396 @@
+{
+  "capabilities": [
+    {
+      "capability": "Fraud Check",
+      "endpoint": "https://api.chainaware.ai/api/fraud/check",
+      "method": "POST",
+      "description": "Calculate fraud probability of a given wallet address",
+      "inputSchema": {
+        "network": {
+          "type": "string",
+          "description": "Blockchain network to query.",
+          "enum": [
+            "ETH",
+            "BNB",
+            "POLYGON",
+            "TON",
+            "BASE",
+            "TRON",
+            "HAQQ"
+          ],
+          "required": true,
+          "example": "ETH"
+        },
+        "walletAddress": {
+          "type": "string",
+          "description": " The wallet address to screen.",
+          "required": true,
+          "example": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        },
+        "calculate": {
+          "type": "boolean",
+          "description": " Boolean indicating whether to perform a full realtime recalculation",
+          "required": false,
+          "example": false
+        }
+      },
+      "outputSchema": {
+        "message": {
+          "type": "string",
+          "description": "Result status message.",
+          "example": "Success"
+        },
+        "walletAddress": {
+          "type": "string",
+          "description": "Blockchain wallet address analyzed.",
+          "example": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        },
+        "chain": {
+          "type": "string",
+          "description": "Blockchain network identifier.",
+          "example": "ETH"
+        },
+        "status": {
+          "type": "string",
+          "description": "Risk classification of the wallet.",
+          "enum": [
+            "Not Fraud",
+            "Fraud",
+            "New Address"
+          ],
+          "example": "Not Fraud"
+        }
+      },
+      "pricing": {
+        "perCall": "$0.15",
+        "currency": "USDC",
+        "network": "eip155:8453",
+        "paymentProtocol": "x402",
+        "receiver": "0x9e60Ca8606b39533B9E1bC460f6d0C92c16CeA08"
+      },
+      "tags": [
+        "fraud",
+        "wallet",
+        "risk",
+        "screening",
+        "blockchain"
+      ],
+      "examples": [
+        "Check if wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 is fraudulent on ETH",
+        "Screen wallet 0xABC123 for fraud risk on BNB chain"
+      ]
+    },
+    {
+      "capability": "Wallet Audit",
+      "endpoint": "https://api.chainaware.ai/api/fraud/audit",
+      "method": "POST",
+      "description": "AI predictive wallet behaviour analysis and profiling",
+      "inputSchema": {
+        "network": {
+          "type": "string",
+          "description": "Blockchain network to query.",
+          "enum": [
+            "ETH",
+            "BNB",
+            "BASE",
+            "HAQQ",
+            "SOLANA"
+          ],
+          "required": true,
+          "example": "ETH"
+        },
+        "walletAddress": {
+          "type": "string",
+          "description": "The wallet address to profile.",
+          "required": true,
+          "example": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        },
+        "calculate": {
+          "type": "boolean",
+          "description": "Boolean indicating whether to perform a full realtime recalculation",
+          "required": false,
+          "example": false
+        }
+      },
+      "outputSchema": {
+        "message": {
+          "type": "string",
+          "description": "Result status message.",
+          "example": "Success"
+        },
+        "walletAddress": {
+          "type": "string",
+          "description": "Blockchain wallet address analyzed.",
+          "example": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        },
+        "status": {
+          "type": "string",
+          "description": "Fraud classification of the wallet.",
+          "enum": [
+            "Not Fraud",
+            "Fraud",
+            "New Address"
+          ],
+          "example": "Not Fraud"
+        },
+        "probabilityFraud": {
+          "type": "string",
+          "description": "Fraud probability score between 0.00 and 1.00 returned as string for precision preservation.",
+          "example": "0.0421858616"
+        },
+        "token": {
+          "type": "string",
+          "nullable": true,
+          "description": "Optional token context associated with the wallet analysis.",
+          "example": null
+        },
+        "chain": {
+          "type": "string",
+          "description": "Blockchain network identifier.",
+          "example": "ETH"
+        },
+        "lastChecked": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last time the wallet analysis was executed.",
+          "example": "2026-02-20T14:05:17.000Z"
+        },
+        "experience": {
+          "type": "object",
+          "description": "Wallet experience score derived from protocol diversity and longevity.",
+          "properties": {
+            "Type": {
+              "type": "string",
+              "example": "Experience"
+            },
+            "Value": {
+              "type": "integer",
+              "example": 10
+            }
+          }
+        }
+      },
+      "pricing": {
+        "perCall": "$0.15",
+        "currency": "USDC",
+        "network": "eip155:8453",
+        "paymentProtocol": "x402",
+        "receiver": "0x9e60Ca8606b39533B9E1bC460f6d0C92c16CeA08"
+      },
+      "tags": [
+        "behavior",
+        "ai",
+        "wallet",
+        "prediction",
+        "profiling"
+      ],
+      "examples": [
+        "Audit wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 behaviour on ETH",
+        "Get fraud probability score for wallet on BASE network"
+      ]
+    },
+    {
+      "capability": "Wallet Segmentation",
+      "endpoint": "https://api.chainaware.ai/api/segmentation/wallet-segment",
+      "method": "POST",
+      "description": "Get wallet behaviour segmentation and quality scoring",
+      "inputSchema": {
+        "walletAddress": {
+          "type": "string",
+          "description": "The wallet address to classify.",
+          "required": true,
+          "example": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        },
+        "network": {
+          "type": "string",
+          "description": "Blockchain network to query.",
+          "required": true,
+          "enum": [
+            "ETH",
+            "BNB",
+            "BASE",
+            "HAQQ",
+            "SOLANA"
+          ],
+          "example": "ETH"
+        }
+      },
+      "outputSchema": {
+        "message": {
+          "type": "string",
+          "description": "Result status message.",
+          "example": "Wallet segment retrieved"
+        },
+        "walletAddress": {
+          "type": "string",
+          "description": "Blockchain wallet address analyzed.",
+          "example": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        },
+        "walletQuality": {
+          "type": "integer",
+          "description": "Calculated wallet quality score from 0 to 100 derived from segment, protocol diversity, balance history, and wallet behavior.",
+          "example": 2
+        }
+      },
+      "pricing": {
+        "perCall": "$0.15",
+        "currency": "USDC",
+        "network": "eip155:8453",
+        "paymentProtocol": "x402",
+        "receiver": "0x9e60Ca8606b39533B9E1bC460f6d0C92c16CeA08"
+      },
+      "tags": [
+        "segmentation",
+        "ai",
+        "wallet",
+        "quality",
+        "classification"
+      ],
+      "examples": [
+        "Segment wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 on ETH",
+        "Get wallet quality score for address on SOLANA"
+      ]
+    },
+    {
+      "capability": "Rug Pull Check",
+      "endpoint": "https://api.chainaware.ai/api/rug/pull-check",
+      "method": "POST",
+      "description": "Calculate fraud probability of a given contract address",
+      "inputSchema": {
+        "network": {
+          "type": "string",
+          "description": "Blockchain network to query.",
+          "enum": [
+            "ETH",
+            "BNB",
+            "BASE",
+            "HAQQ"
+          ],
+          "required": true,
+          "example": "ETH"
+        },
+        "walletAddress": {
+          "type": "string",
+          "description": "The smart contract or liquidity pool address to screen. To check a wallet address instead, use `/fraud/check`.",
+          "required": true,
+          "example": "0xContractAddressHere"
+        }
+      },
+      "outputSchema": {
+        "message": {
+          "type": "string",
+          "description": "Result status message.",
+          "example": "Success"
+        },
+        "contractAddress": {
+          "type": "string",
+          "description": "Smart contract address analyzed.",
+          "example": "0x91dba2cd05c8a0227b48c3e426077145d23b21df"
+        },
+        "pairAddress": {
+          "type": "string",
+          "description": "Liquidity pair address on decentralized exchange.",
+          "example": "0x290dd1e2e1856841b4ee4be8fd1aba51011c12e9"
+        },
+        "contractCreatorAddress": {
+          "type": "string",
+          "nullable": true,
+          "description": "Creator address of the contract if available.",
+          "example": null
+        },
+        "risk_score": {
+          "type": "integer",
+          "description": "Internal numerical contract risk score.",
+          "example": 2
+        },
+        "risk_status": {
+          "type": "string",
+          "description": "Qualitative risk classification based on internal scoring.",
+          "example": "Low Risk"
+        }
+      },
+      "pricing": {
+        "perCall": "$0.15",
+        "currency": "USDC",
+        "network": "eip155:8453",
+        "paymentProtocol": "x402",
+        "receiver": "0x9e60Ca8606b39533B9E1bC460f6d0C92c16CeA08"
+      },
+      "tags": [
+        "rug-pull",
+        "predit-rug-pull",
+        "rug-pull-check"
+      ],
+      "examples": [
+        "Check rug pull risk for contract 0xContractAddressHere on ETH",
+        "Screen liquidity pool contract on BNB for rug pull indicators"
+      ]
+    },
+    {
+      "capability": "Credit Score",
+      "endpoint": "https://api.chainaware.ai/api/users/credit-score",
+      "method": "POST",
+      "description": "Get user's credit score",
+      "inputSchema": {
+        "network": {
+          "type": "string",
+          "description": "Blockchain network to query.",
+          "enum": [
+            "ETH"
+          ],
+          "required": false,
+          "example": "ETH"
+        },
+        "walletAddress": {
+          "type": "string",
+          "description": "The wallet address to score.",
+          "required": true,
+          "example": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        }
+      },
+      "outputSchema": {
+        "message": {
+          "type": "string",
+          "description": "Result status message.",
+          "example": "Success"
+        },
+        "creditData": {
+          "type": "object",
+          "properties": {
+            "walletAddress": {
+              "type": "string",
+              "description": "The queried wallet address.",
+              "example": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+            },
+            "riskRating": {
+              "type": "integer",
+              "description": "AI-driven crypto trust score from 1 (lowest trust) to 9 (highest trust). Combines on-chain inflow/outflow analysis, fraud probability, and social graph signals. Score guidance: 8\u20139 high trust, 6\u20137 above average, 4\u20135 average, 2\u20133 below average, 1 low trust.",
+              "minimum": 1,
+              "maximum": 9,
+              "example": 7
+            }
+          }
+        }
+      },
+      "pricing": {
+        "perCall": "$0.15",
+        "currency": "USDC",
+        "network": "eip155:8453",
+        "paymentProtocol": "x402",
+        "receiver": "0x9e60Ca8606b39533B9E1bC460f6d0C92c16CeA08"
+      },
+      "tags": [
+        "defi-score",
+        "trust-score",
+        "credit-score",
+        "rug-pull",
+        "contract",
+        "defi"
+      ],
+      "examples": [
+        "Get credit score for wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+        "What is the trust rating for wallet 0xABC123 on ETH"
+      ]
+    }
+  ]
+}

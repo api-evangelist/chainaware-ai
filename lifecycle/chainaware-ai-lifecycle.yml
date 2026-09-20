@@ -1,0 +1,44 @@
+generated: '2026-09-19'
+method: searched
+source: https://swagger.chainaware.ai/swagger.json
+derived_from: openapi/chainaware-ai-enterprise-api-openapi.yml
+docs:
+- https://chainaware.ai/learn/api/index.html
+- https://chainaware.ai/learn/prediction-mcp/index.html
+- https://chainaware.ai/blog/topics/news/
+versioning:
+  scheme: unversioned paths; version numbers carried in documents and server identity only
+  current_version: 1.0.2 (Swagger info.version) / 1.11.0 (MCP serverInfo.version) / 1.0.0 (agent card version and MCP registry entry)
+  spec_url: https://swagger.chainaware.ai/swagger.json
+  base_url: https://enterprise.api.chainaware.ai
+  policy_published: false
+  docs_last_updated: '2026-06-29'
+  note: >-
+    No path, header or query versioning on any surface. The Enterprise API overview page carries a "Last
+    updated: 2026-06-29" stamp. The three surfaces do not share a version number and the MCP registry entry
+    (1.0.0, published 2026-01-19) is ten minor versions behind the live server (1.11.0). The growth-tech docs
+    mention a "GET /v1/behaviour/{wallet_address}" analytics route with a /v1 prefix that appears in no
+    published contract.
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  documented_retirements: []
+  note: >-
+    Zero operations carry deprecated: true; no deprecation or versioning policy page exists. The blog records
+    product SUPERSESSIONS rather than API retirements — Rug Pull Detector V3 replacing V2 (68% -> 90.1%
+    accuracy) — with no statement about whether the V2 model or any endpoint is withdrawn. No Deprecation
+    pointer is emitted.
+status_page:
+  url: null
+  note: status.chainaware.ai does not resolve; no status page is linked from the docs, footer, llms.txt or sitemap. No StatusPage pointer is emitted.
+sla:
+  url: null
+  uptime_target: null
+  stated_latency: '"Response latency: under 100ms" (per-endpoint docs); "Sub-100ms response time" (transaction-monitoring page)'
+  note: A latency figure is stated on the docs; no uptime commitment, support response time or SLA document is published for the API. Enterprise onboarding and "custom volume pricing" are by contact form.
+changelog:
+  url: null
+  note: No dated changelog or release-notes page. Product launches and weekly data posts appear under the blog's News topic (https://chainaware.ai/blog/topics/news/); the MCP repository has no tags or GitHub releases (last commit 2026-08-11). No ChangeLog pointer is emitted.

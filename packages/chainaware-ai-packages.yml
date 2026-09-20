@@ -1,0 +1,48 @@
+generated: '2026-09-19'
+method: searched
+source: registry searches and the provider's GitHub account, 2026-09-19
+package_count: 0
+official_sdk_count: 0
+packages: []
+searched:
+- {registry: npm, query: 'https://registry.npmjs.org/-/v1/search?text=chainaware', result: '1 result, @inflectiv-ai/inflectiv-mcp — a partner (Inflectiv) package, not ChainAware; not linked'}
+- {registry: npm, query: 'https://registry.npmjs.org/chainaware, /@chainaware/sdk, /@chainaware/mcp, /chainaware-mcp', status: 404}
+- {registry: pypi, query: 'https://pypi.org/pypi/chainaware/json, chainaware-mcp, chainaware-sdk, behavioral-prediction-mcp, chainaware-ai', status: 404}
+- {registry: mcp-registry, query: 'https://registry.modelcontextprotocol.io/v0/servers?search=chainaware', result: '1 result — see mcp_registry_entry below (a remote server listing, not an installable package)'}
+- {registry: github, query: 'https://api.github.com/users/ChainAware', result: 'a User account (not an Organization) named "ChainAware.ai", blog https://ChainAware.ai, 3 public repositories, created 2025-10-29'}
+mcp_registry_entry:
+  name: io.github.ChainAware/chainaware-behavioral-prediction-mcp
+  version: 1.0.0
+  published: '2026-01-19'
+  status: active
+  remotes: [{type: sse, url: 'https://prediction.mcp.chainaware.ai/sse', header: X-API-Key}]
+  note: No `packages` block in server.json — remote-only; nothing to npx/uvx. The live server reports 1.11.0, so the registry version is stale.
+source_repositories:
+- name: ChainAware/behavioral-prediction-mcp
+  url: https://github.com/ChainAware/behavioral-prediction-mcp
+  language: Python (FastMCP 2.12.0 per glama.json)
+  license: MIT
+  official: true
+  version: null
+  published: null
+  last_commit: '2026-08-11'
+  stars: 10
+  tags_or_releases: none
+  note: The MCP server's source, 34 Claude Code subagent definitions, Eliza characters, an OpenAI skill definition, SKILL.md and AGENTS.md. Not published to any package index; version null because there is no registry metadata endpoint to read one from (server.json says 1.0.0, the live server 1.11.0).
+- name: ChainAware/examples
+  url: https://github.com/ChainAware/examples
+  language: Python
+  license: null
+  official: true
+  version: null
+  published: null
+  last_commit: '2026-09-07'
+  note: 36 runnable agent examples (anthropic + mcp SDKs) and a python/chainaware_sse.py helper module for the SSE transport — a copy-in helper, not an installable client library.
+- name: ChainAware/sandbox-smart-contracts
+  url: https://github.com/ChainAware/sandbox-smart-contracts
+  official: false
+  note: A fork of The Sandbox game's contracts; unrelated to the API surface. Listed only because it sits on the account.
+note: >-
+  ChainAware ships no client SDK, CLI or installable package in any registry searched; the documented ways in
+  are raw HTTP against the Swagger, the hosted MCP server (with the generic @modelcontextprotocol/sdk or
+  Python `mcp` client), or the A2A/x402 endpoint. No Packages or SDKs pointer is emitted.

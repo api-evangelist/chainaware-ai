@@ -1,0 +1,442 @@
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "result": {
+    "tools": [
+      {
+        "name": "predictive_fraud",
+        "description": "\n    \ud83d\udd2e Predictive Fraud Detection Tool\n\n    This AI\u2011powered algorithm forecasts the likelihood of fraudulent activity\n    on a given wallet address *before* it happens (\u224898% accuracy), and performs\n    AML/Anti\u2011Money\u2011Laundering checks. Use this when your user wants a risk\n    assessment or early\u2011warning on a blockchain address.\n\n    \u2014\u2014\u2014\n    \ud83d\udce5 Input Arguments:\n      \u2022 apiKey (string, required): API key for authentication.\n      \u2022 network (string, required): Blockchain network identifier (e.g. ETH for Ethereum, BNB for Binance, POLYGON for Polygon,TON for Telegram(TON), BASE for Base, HAQQ for Haqq)\n      \u2022 walletAddress (string, required): The wallet address to evaluate.\n\n    \u27a1\ufe0f Use Cases:\n      \u2022 What is the fraudulent status of this address ?\n      \u2022 \u201cIs my new wallet at risk of being used for fraud?\u201d  \n      \u2022 \u201cMonitor a high\u2011value address for suspicious future activity.\u201d  \n\n    \u2014\u2014\u2014\n    \ud83d\udce4 Expected Output (JSON):\n    ```json\n    {\n      \"message\": \"string\",                         // e.g. \u201cSuccess\u201d or error description\n      \"walletAddress\": \"string\",                   // blockchain wallet address that was analyzed\n      \"chain\": \"string\",                           // blockchain network identifier (e.g. ETH, BNB,POLYGON,TON,BASE, TRON, HAQQ)\n      \"status\": \"string\",                          // classification result (e.g. \u201cFraud\u201d | \u201cNot Fraud\u201d | \u201cNew Address\u201d)\n      \"probabilityFraud\": \"0.00\u20131.00\",             // decimal fraud probability score (string to preserve precision)\n      \n      \"token\": \"string | null\",                    // optional token associated with the check (may be null)\n      \"lastChecked\": \"ISO-8601 timestamp\",         // last time the wallet risk analysis was executed\n      \n      \"forensic_details\": {\n        \"cybercrime\": \"string\",                    // indicator score for cybercrime activity\n        \"money_laundering\": \"string\",              // indicator score for money laundering activity\n        \"number_of_malicious_contracts_created\": \"string\",  // number of malicious contracts deployed by this wallet\n        \"gas_abuse\": \"string\",                     // gas abuse indicator\n        \"financial_crime\": \"string\",               // financial crime indicator\n        \"darkweb_transactions\": \"string\",          // interaction with darkweb-linked wallets\n        \"reinit\": \"string\",                        // reinitialization exploit indicator\n        \"phishing_activities\": \"string\",           // phishing activity indicator\n        \"fake_kyc\": \"string\",                      // fake KYC related activity\n        \"blacklist_doubt\": \"string\",               // suspected blacklist association\n        \"fake_standard_interface\": \"string\",       // fake ERC interface indicator\n        \"data_source\": \"string\",                   // source of forensic intelligence (may be empty)\n        \"stealing_attack\": \"string\",               // stealing attack indicator\n        \"blackmail_activities\": \"string\",          // blackmail activity indicator\n        \"sanctioned\": \"string\",                    // sanction exposure indicator\n        \"malicious_mining_activities\": \"string\",   // malicious mining indicator\n        \"mixer\": \"string\",                         // interaction with mixing services\n        \"fake_token\": \"string\",                    // fake token creation or usage indicator\n        \"honeypot_related_address\": \"string\"       // interaction with honeypot-related addresses\n      },\n      \"checked_times\": 0,                          // integer \u2014 number of times this wallet has been analyzed\n      \n      \"createdAt\": \"ISO-8601 timestamp\",           // record creation timestamp\n      \"updatedAt\": \"ISO-8601 timestamp\",           // record last update timestamp\n\n      \"sanctionData\": [\n        {\n          \"category\": \"string | null\",              // sanction category (may be null)\n          \"name\": \"string | null\",                  // sanction list name\n          \"description\": \"string | null\",           // sanction description\n          \"url\": \"string | null\",                   // source URL for sanction information\n          \"isSanctioned\": false,                    // boolean \u2014 whether the wallet is officially sanctioned\n          \"createdAt\": \"ISO-8601 timestamp\",        // sanction record creation timestamp\n          \"updatedAt\": \"ISO-8601 timestamp\"         // sanction record last update timestamp\n        }\n      ]\n    }\n    ```\n    \u2014\u2014\u2014\n    Error cases:\n      \u2022 `401 Unauthorized` \u2192 invalid `apiKey`  \n      \u2022 `400 Bad Request` \u2192 malformed `network` or `walletAddress`  \n      \u2022 `500 Internal Server Error` \u2192 temporary downstream failure  \n    ",
+        "inputSchema": {
+          "properties": {
+            "apiKey": {
+              "title": "Apikey",
+              "type": "string"
+            },
+            "network": {
+              "title": "Network",
+              "type": "string"
+            },
+            "walletAddress": {
+              "title": "Walletaddress",
+              "type": "string"
+            }
+          },
+          "required": [
+            "apiKey",
+            "network",
+            "walletAddress"
+          ],
+          "title": "predictive_fraudArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "additionalProperties": true,
+          "title": "predictive_fraudDictOutput",
+          "type": "object"
+        }
+      },
+      {
+        "name": "predictive_fraud_batch",
+        "description": "\n    Schedule a batch fraud calculation job for a list of wallet addresses.\n    Use this when the user provides a CSV or list of addresses to analyse.\n    Returns a job_id and signature immediately \u2014 report the job_id to the user and \n    store both job_id and signature in context, they are required for all follow-up calls.\n    Do NOT poll or wait for results after scheduling.\n\n    Args:\n        apiKey: API key for authentication.\n        addresses: List of wallet objects, each with walletAddress and optionally network \n                  e.g. [{\"walletAddress\": \"0x123\", \"network\": \"ETH\"}] max 1000\n        network: Blockchain network identifier (e.g. ETH for Ethereum, BNB for Binance, \n                POLYGON for Polygon, TON for Telegram(TON), BASE for Base, HAQQ for Haqq)\n    ",
+        "inputSchema": {
+          "properties": {
+            "apiKey": {
+              "title": "Apikey",
+              "type": "string"
+            },
+            "addresses": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "title": "Addresses",
+              "type": "array"
+            },
+            "network": {
+              "title": "Network",
+              "type": "string"
+            }
+          },
+          "required": [
+            "apiKey",
+            "addresses",
+            "network"
+          ],
+          "title": "predictive_fraud_batchArguments",
+          "type": "object"
+        }
+      },
+      {
+        "name": "predictive_behaviour",
+        "description": "\n\n    \ud83d\udd0d Predictive Behaviour Analysis Tool\n\n    This AI\u2011driven engine projects what a wallet address intentions or what address is likely to do next,\n    profiles its past on\u2011chain history, and recommends personalized actions.\n    Use this when you need:\n      \u2022 Next\u2011best\u2011action predictions and intentions(\u201cWill this address deposit, trade, or stake?\u201d)  \n      \u2022 A risk\u2011tolerance and experience profile  \n      \u2022 Category segmentation (e.g. NFT, DeFi, Bridge usage)  \n      \u2022 Custom recommendations based on historical patterns\n\n    \ud83d\udce5 Input Arguments:\n      \u2022 apiKey        \u2014 (string, required) API key for authentication. \n      \u2022 network       \u2014 (string, required) Blockchain network (e.g. ETH for Ethereum, BNB for Binance, BASE for Base, HAQQ for Haqq)\n      \u2022 walletAddress \u2014 (string, required) The wallet or contract address to analyze  \n\n    \u27a1\ufe0f Example Use Cases:\n      \u2013 \u201cWhat will this address do next?\u201d  \n      \u2013 \u201cIs the user high\u2011risk or experienced?\u201d  \n      \u2013 \u201cRecommend the best DeFi strategies for this address.\u201d\n\n    \u2014\u2014\u2014\n    \ud83d\udce4 Expected Output Schema (JSON):\n    ```\n    {\n      \"message\": \"string\",                           // e.g. \u201cSuccess\u201d or error description\n      \"walletAddress\": \"string\",                     // blockchain wallet address analyzed\n      \"status\": \"string\",                            // fraud classification result (e.g. \u201cFraud\u201d | \u201cNot Fraud\u201d | \u201cNew Address\u201d)\n\n      \"probabilityFraud\": \"0.00\u20131.00\",               // decimal probability score indicating fraud risk\n      \"token\": \"string | null\",                      // optional token context for the analysis\n      \"chain\": \"string\",                             // blockchain network identifier (e.g. ETH, BNB,BASE,HAQQ,SOLANA)\n\n      \"lastChecked\": \"ISO-8601 timestamp\",           // last time the wallet was analyzed\n\n      \"forensic_details\": {\n        \"cybercrime\": \"string\",                      // indicator of cybercrime association\n        \"money_laundering\": \"string\",                // money laundering activity indicator\n        \"number_of_malicious_contracts_created\": \"string\", // malicious contracts deployed by wallet\n        \"gas_abuse\": \"string\",                       // abnormal gas usage indicator\n        \"financial_crime\": \"string\",                 // financial crime activity indicator\n        \"darkweb_transactions\": \"string\",            // interaction with darkweb-linked wallets\n        \"reinit\": \"string\",                          // contract reinitialization exploit indicator\n        \"phishing_activities\": \"string\",             // phishing activity indicator\n        \"fake_kyc\": \"string\",                        // fake KYC interaction indicator\n        \"blacklist_doubt\": \"string\",                 // suspected blacklist association\n        \"fake_standard_interface\": \"string\",         // fake token interface indicator\n        \"data_source\": \"string\",                     // source of forensic intelligence\n        \"stealing_attack\": \"string\",                 // stealing attack indicator\n        \"blackmail_activities\": \"string\",            // blackmail activity indicator\n        \"sanctioned\": \"string\",                      // sanction exposure indicator\n        \"malicious_mining_activities\": \"string\",     // malicious mining activity indicator\n        \"mixer\": \"string\",                           // interaction with mixing services\n        \"fake_token\": \"string\",                      // fake token creation/use indicator\n        \"honeypot_related_address\": \"string\"         // honeypot contract interaction indicator\n      },\n\n      \"categories\": [\n        {\n          \"Category\": \"string\",                      // wallet interaction category (e.g. DeFi, NFT, Bridge)\n          \"Count\": 0                                 // number of transactions/interactions in this category\n        }\n      ],\n\n      \"riskProfile\": [\n        {\n          \"Category\": \"Risk_Profile\",                 // willingnes to take risk object\n          \"Balance_age\": 0.0                         // 1-10 willingnes to take risk value\n        }\n      ],\n\n      \"segmentInfo\": \"string (JSON encoded)\",        // serialized JSON containing protocol engagement flags (e.g \"{\"Maker\":0,\"Aave_borrow\":0,\"Aave_lend\":1,\"Lido\":0,\"Uniswap\":1,\"Compound_lend\":0,\"Compound_borrow\":0}\")\n\n      \"experience\": {\n        \"Type\": \"string\",                            // descriptor label (e.g. \u201cExperience\u201d)\n        \"Value\": 0                                   // numeric experience score level\n      },\n\n      \"intention\": {\n        \"Type\": \"string\",                            // descriptor label (e.g. \u201cIntentions\u201d)\n        \"Value\": {\n          \"Prob_Lend\": \"Low | Medium | High\",\n          \"Prob_Trade\": \"Low | Medium | High\",\n          \"Prob_Game\": \"Low | Medium | High\",\n          \"Prob_NFT\": \"Low | Medium | High\",\n          \"Prob_Stake_ETH\": \"Low | Medium | High\",\n          \"Prob_Borrow\": \"Low | Medium | High\",\n          \"Prob_Gamble\": \"Low | Medium | High\",\n          \"Prob_Stake\": \"Low | Medium | High\",\n          \"Prob_Yield_Farm\": \"Low | Medium | High\",\n          \"Prob_Leveraged_Stake\": \"Low | Medium | High\",\n          \"Prob_Leveraged_Stake_ETH\": \"Low | Medium | High\",\n          \"Prob_Leveraged_Lend\": \"Low | Medium | High\",\n          \"Prob_Leverage_Long_ETH\": \"Low | Medium | High\",\n          \"Prob_Leverage_Long\": \"Low | Medium | High\"\n        }\n      },\n\n      \"protocols\": [\n        {\n          \"Protocol\": \"string\",                      // protocol name (e.g. Uniswap, Curve, MakerDAO)\n          \"Count\": 0                                 // number of interactions with this protocol\n        }\n      ],\n\n      \"userDetails\": {\n        \"wallet_age_days\": 0,                        // age of wallet in days\n        \"total_balance_usd\": 0.0,                    // current wallet balance in USD\n        \"transaction_count\": 0,                      // total number of transactions executed\n        \"wallet_rank\": 0                             // ranking of wallet in the scoring system\n      },\n\n      \"riskCapability\": 0,                           // numeric risk capability score\n\n      \"recommendation\": {\n        \"Type\": \"string\",                            // descriptor label (e.g. \u201cRecommendation\u201d)\n        \"Value\": [\n          \"string\"                                   // recommended strategies or actions\n        ]\n      },\n\n      \"checked_times\": 0,                            // number of times the wallet analysis was executed\n      \"createdAt\": \"ISO-8601 timestamp\",             // record creation timestamp\n      \"updatedAt\": \"ISO-8601 timestamp\",             // record last update timestamp\n\n      \"sanctionData\": [\n        {\n          \"id\": 0,                                   // sanction record identifier\n          \"trustscore_id\": 0,                        // trust score reference id\n          \"category\": \"string | null\",               // sanction category\n          \"name\": \"string | null\",                   // sanction list name\n          \"description\": \"string | null\",            // sanction description\n          \"url\": \"string | null\",                    // reference source URL\n          \"isSanctioned\": false,                     // whether the wallet is officially sanctioned\n          \"createdAt\": \"ISO-8601 timestamp\",\n          \"updatedAt\": \"ISO-8601 timestamp\"\n        }\n      ]\n    }\n    ```\n    \n    ",
+        "inputSchema": {
+          "properties": {
+            "apiKey": {
+              "title": "Apikey",
+              "type": "string"
+            },
+            "network": {
+              "title": "Network",
+              "type": "string"
+            },
+            "walletAddress": {
+              "title": "Walletaddress",
+              "type": "string"
+            }
+          },
+          "required": [
+            "apiKey",
+            "network",
+            "walletAddress"
+          ],
+          "title": "predictive_behaviourArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "additionalProperties": true,
+          "title": "predictive_behaviourDictOutput",
+          "type": "object"
+        }
+      },
+      {
+        "name": "predictive_behaviour_batch",
+        "description": "\n    Schedule a batch audit (behavioral prediction) calculation job for a list of wallet addresses.\n    Use this when the user provides a CSV or list of addresses to analyse.\n    Returns a job_id and signature immediately \u2014 report the job_id to the user and \n    store both job_id and signature in context, they are required for all follow-up calls.\n    Do NOT poll or wait for results after scheduling.\n\n    Args:\n        apiKey: API key for authentication.\n        addresses: List of wallet objects, each with walletAddress and optionally network \n                  e.g. [{\"walletAddress\": \"0x123\", \"network\": \"ETH\"}] max 1000\n        network: Blockchain network identifier (e.g. ETH for Ethereum, BNB for Binance, BASE for Base, HAQQ for Haqq)\n    ",
+        "inputSchema": {
+          "properties": {
+            "apiKey": {
+              "title": "Apikey",
+              "type": "string"
+            },
+            "addresses": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "title": "Addresses",
+              "type": "array"
+            },
+            "network": {
+              "title": "Network",
+              "type": "string"
+            }
+          },
+          "required": [
+            "apiKey",
+            "addresses",
+            "network"
+          ],
+          "title": "predictive_behaviour_batchArguments",
+          "type": "object"
+        }
+      },
+      {
+        "name": "predictive_rug_pull",
+        "description": "\n    \ud83e\ude82 Predictive Rug\u2011Pull Detection Tool\n\n    This AI\u2011powered engine forecasts which liquidity pools or contracts\n    are likely to perform a \u201crug pull\u201d in the future. Use this when you\n    need to warn users before they deposit into risky pools or to monitor\n    smart\u2011contract security on-chain.\n\n    \u2014\u2014\u2014\n    \ud83d\udce5 Input Arguments:\n      \u2022 apiKey        \u2014 (string, required) API key for authentication. \n      \u2022 network       \u2014 (string, required) (e.g. ETH for Ethereum, BNB for Binance, BASE for Base, HAQQ for Haqq) \n      \u2022 walletAddress \u2014 (string, required) The smart\u2011contract or pool address to evaluate  \n\n    \u27a1\ufe0f Example Use Cases:\n      \u2013 \u201cWill this new DeFi pool rug\u2011pull if I stake my assets?\u201d  \n      \u2013 \u201cMonitor my LP position for potential future exploits.\u201d  \n\n    \u2014\u2014\u2014\n    \ud83d\udce4 Expected Output Schema (JSON):\n    ```\n    {\n      \"message\": \"string\",                         // e.g. \u201cSuccess\u201d or error description\n\n      \"contractAddress\": \"string\",                 // smart contract address analyzed\n      \"pairAddress\": \"string\",                     // liquidity pair address on DEX\n      \"contractCreatorAddress\": \"string | null\",   // creator address of the contract if known\n\n      \"risk_score\": 0,                             // numeric internal risk score\n      \"risk_status\": \"string\",                     // qualitative risk level (e.g. \u201cLow Risk\u201d, \u201cMedium Risk\u201d, \u201cHigh Risk\u201d)\n\n      \"risk_indicators\": {\n        \"is_honeypot\": 0,                          // honeypot detection flag\n        \"honeypot_with_same_creator\": 0,           // creator deployed previous honeypots\n        \"can_take_back_ownership\": 0,              // contract allows reclaiming ownership\n        \"is_mintable\": 0,                          // token supply can be minted\n        \"hidden_owner\": 0,                         // hidden ownership mechanism detected\n\n        \"buy_tax\": 0,                              // buy transaction tax percentage\n        \"sell_tax\": 0,                             // sell transaction tax percentage\n\n        \"cannot_buy\": 0,                           // trading restriction preventing buys\n        \"cannot_sell_all\": 0,                      // restriction preventing full sell\n\n        \"is_blacklisted\": 0,                       // blacklist functionality detected\n        \"is_whitelisted\": 0,                       // whitelist-only functionality detected\n\n        \"creator_percent\": 0,                      // percentage of supply owned by creator\n        \"lp_holders_locked\": false,                // liquidity lock status\n\n        \"liquidity\": 0.0,                          // liquidity amount in base token\n        \"market_cap\": 0,                           // estimated market capitalization\n\n        \"is_in_dex\": 0,                            // token listed on DEX\n\n        \"slippage_modifiable\": 0,                  // contract can modify slippage parameters\n        \"transfer_pausable\": 0,                    // transfers can be paused\n        \"is_anti_whale\": 0,                        // anti-whale protection mechanism\n        \"anti_whale_modifiable\": 0,                // anti-whale parameters modifiable\n\n        \"trading_cooldown\": 0,                     // cooldown period between trades\n        \"personal_slippage_modifiable\": 0,         // per-wallet slippage modification\n\n        \"is_open_source\": 0,                       // contract source verified\n        \"is_proxy\": 0,                             // proxy contract indicator\n\n        \"owner_address\": \"string\",                 // owner address of contract\n        \"owner_change_balance\": 0,                 // owner ability to modify balances\n\n        \"selfdestruct\": 0,                         // self-destruct capability\n        \"external_call\": 0,                        // external calls present\n        \"gas_abuse\": 0                             // abnormal gas manipulation behavior\n      },\n\n      \"liquidityEvent\": [\n        {\n          \"eventType\": \"string\",                   // liquidity event type (e.g. add/remove)\n          \"amount\": 0.0,                           // liquidity amount affected\n          \"token\": \"string\",                       // token symbol involved in liquidity\n\n          \"tx_hash\": \"string\",                     // transaction hash\n\n          \"from_address\": \"string\",                // address initiating liquidity action\n          \"from_fraud_probability\": \"0.00\u20131.00\",   // fraud probability score for sender\n          \"from_fraud_status\": \"string\",           // fraud classification of sender\n\n          \"createdAt\": \"ISO-8601 timestamp\"        // timestamp of liquidity event\n        }\n      ],\n\n      \"status\": \"string\",                          // overall fraud classification of contract\n      \"probabilityFraud\": \"0.00\u20131.00\",             // probability of contract being fraudulent\n\n      \"chain\": \"string\",                           // blockchain network identifier (e.g. BNB, ETH, BASE, HAQQ)\n      \"lastChecked\": \"ISO-8601 timestamp\",         // last time contract analysis was performed\n\n      \"contractCreationTime\": \"ISO-8601 timestamp | null\", // contract deployment timestamp\n\n      \"forensic_details\": {\n        \"owner\": \"object\",                         // owner metadata\n        \"privilege_withdraw\": 0,                   // privileged withdraw capability\n        \"withdraw_missing\": 0,                     // missing withdraw function\n        \"is_open_source\": 0,                       // contract source verification status\n        \"blacklist\": 0,                            // blacklist functionality\n        \"contract_name\": \"string\",                 // contract/token name\n        \"selfdestruct\": 0,                         // self-destruct capability\n        \"is_proxy\": 0,                             // proxy contract indicator\n        \"approval_abuse\": 0                        // abnormal token approval behavior\n      },\n\n      \"checked_times\": 0,                          // number of times contract has been analyzed\n\n      \"createdAt\": \"ISO-8601 timestamp\",           // record creation time\n      \"updatedAt\": \"ISO-8601 timestamp\"            // last update time\n    }\n\n    ```   \n    ",
+        "inputSchema": {
+          "properties": {
+            "apiKey": {
+              "title": "Apikey",
+              "type": "string"
+            },
+            "network": {
+              "title": "Network",
+              "type": "string"
+            },
+            "walletAddress": {
+              "title": "Walletaddress",
+              "type": "string"
+            }
+          },
+          "required": [
+            "apiKey",
+            "network",
+            "walletAddress"
+          ],
+          "title": "predictive_rug_pullArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "additionalProperties": true,
+          "title": "predictive_rug_pullDictOutput",
+          "type": "object"
+        }
+      },
+      {
+        "name": "credit_score",
+        "description": "\n    \ud83d\udd2e Credit Score Tool\n\n    AI-driven blockchain analytics evaluate the crypto trust score for each account by reviewing inflows and outflows from Ethereum accounts alongside other blockchain data. \n    Credit Scoring tool combines AI, analytics, crypto fraud scores, and social graph analysis to assess borrower reliability comprehensively.\n    Crypto Credit Score allows lenders to accurately differentiate between reliable and less trustworthy borrowers.\n    This assessment is further enhanced with our predictive_fraud too and social graph analysis, providing a thorough evaluation of borrower reliability. \n\n    \u2014\u2014\u2014\n    \ud83d\udce5 Input Arguments:\n      \u2022 apiKey (string, required): API key for authentication.\n      \u2022 network (string, required): Blockchain network identifier (e.g. ETH for Ethereum, BNB for Binance, POLYGON for Polygon,TON for Telegram(TON), BASE for Base, HAQQ for Haqq)\n      \u2022 walletAddress (string, required): The wallet address to evaluate.\n\n    \u27a1\ufe0f Use Cases:\n      \u2022 \u201cWhat is the credit score for this wallet? \u201d\n      \u2022 \u201cWhat's calculated trust score for this wallet? \u201d\n      \u2022 \u201cCalculate credit score for this wallet? \u201d  \n\n    \u2014\u2014\u2014\n    \ud83d\udce4 Expected Output (JSON):\n    ```json\n    {\n        \"message\": \"Success\",\n        \"creditData\": {\n            \"riskRating\": 1,  //1-9 crypto trust score (credit score)\n            \"walletAddress\": \"\" //Wallet Address which was evaluated\n        }\n    }\n    ```\n    \u2014\u2014\u2014\n    Error cases:\n      \u2022 `401 Unauthorized` \u2192 invalid `apiKey`  \n      \u2022 `400 Bad Request` \u2192 malformed `network` or `walletAddress`  \n      \u2022 `500 Internal Server Error` \u2192 temporary downstream failure  \n    ",
+        "inputSchema": {
+          "properties": {
+            "apiKey": {
+              "title": "Apikey",
+              "type": "string"
+            },
+            "network": {
+              "title": "Network",
+              "type": "string"
+            },
+            "walletAddress": {
+              "title": "Walletaddress",
+              "type": "string"
+            }
+          },
+          "required": [
+            "apiKey",
+            "network",
+            "walletAddress"
+          ],
+          "title": "credit_scoreArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "additionalProperties": true,
+          "title": "credit_scoreDictOutput",
+          "type": "object"
+        }
+      },
+      {
+        "name": "token_rank_list",
+        "description": "\n    \ud83e\ude82 Token Rank List Tool\n\n    TokenRank analyzes the community of token holders and ranks every token by the strength of its holders. The stronger the token holders, the stronger the token! \n    Use this when you need to know token rank of a token or tokens or compare between different categories and chains.\n    You can use search,filter and sort and pagination which returns a list of tokens.\n\n    \u2014\u2014\u2014\n    \ud83d\udce5 Input Arguments:\n      \u2022 limit            \u2014 (string, required) Number of items ot fetch during pagination\n      \u2022 offset           \u2014 (string, required) Page number(offset) during pagination\n      \u2022 network          \u2014 (string, optional) The network or the chain to filter (e.g. ETH for Ethereum, BNB for Binance, BASE for Base, SOLANA for solana) \n      \u2022 sort_by           \u2014 (string, optional) Sort the returnet tokens based on e.g.: 'communityRank'  \n      \u2022 sort_order        \u2014 (string,optional but required if sort_by) 'ASC' or 'DESC' sorting the value of sort_by\n      \u2022 category         \u2014 (string, optional) Filter based on category of the token (e.g. 'AI Token','RWA Token','DeFi Token','DeFAI Token','DePIN Token')  \n      \u2022 contract_name     \u2014 (string, optional) Search based on contract name\n\n\n    \u27a1\ufe0f Example Use Cases:\n      \u2013 \u201cWhich is the best token on AI Token category?\u201d  \n      \u2013 \u201cCompare x token in ETH chain and BNB chain?\u201d\n\n    \u2014\u2014\u2014\n    \ud83d\udce4 Expected Output Schema (JSON):\n    {\n      \"message\": \"string\",                    // e.g. \u201cSuccessfully fetched records\u201d or error description\n      \"data\": {\n        \"total\": 0,                           // integer \u2014 total number of matching contracts\n        \"contracts\": [\n          {\n            \"contractAddress\": \"string\",       // unique contract or mint address (chain-specific format)\n            \"contractName\": \"string\",          // human-readable token name\n            \"ticker\": \"string\",                // token symbol (usually uppercase, but not guaranteed)\n            \"chain\": \"string\",                 // blockchain network (e.g. SOLANA | ETH | BNB | BASE)\n            \"category\": \"string\",              // primary category label (e.g. 'AI Token','RWA Token','DeFi Token','DeFAI Token','DePIN Token') \n            \"type\": \"string\",                  // asset classification (e.g. \u201ctoken\u201d | \u201cnft\u201d)\n            \"communityRank\": 0,                // integer \u2014 raw ranking based on community metrics\n            \"normalizedRank\": 0,               // integer \u2014 normalized or scaled ranking score\n            \"totalHolders\": 0,                 // integer \u2014 total unique wallet holders\n            \"lastProcessedAt\": \"ISO-8601\",     // timestamp when analytics were last computed\n            \"createdAt\": \"ISO-8601\",           // record creation timestamp\n            \"updatedAt\": \"ISO-8601\"            // record last update timestamp\n          }\n        ]\n      }\n    }\n    ",
+        "inputSchema": {
+          "properties": {
+            "limit": {
+              "title": "Limit",
+              "type": "string"
+            },
+            "offset": {
+              "title": "Offset",
+              "type": "string"
+            },
+            "network": {
+              "title": "Network",
+              "type": "string"
+            },
+            "sort_by": {
+              "title": "Sort By",
+              "type": "string"
+            },
+            "sort_order": {
+              "title": "Sort Order",
+              "type": "string"
+            },
+            "category": {
+              "title": "Category",
+              "type": "string"
+            },
+            "contract_name": {
+              "title": "Contract Name",
+              "type": "string"
+            }
+          },
+          "required": [
+            "limit",
+            "offset",
+            "network",
+            "sort_by",
+            "sort_order",
+            "category",
+            "contract_name"
+          ],
+          "title": "token_rank_listArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "additionalProperties": true,
+          "title": "token_rank_listDictOutput",
+          "type": "object"
+        }
+      },
+      {
+        "name": "token_rank_single",
+        "description": "\n    \ud83e\ude82 Token Rank Single Tool\n\n    Similar to TokenRank List,Token Rank analyzes the community of token holders and ranks every token by the strength of its holders.\n    Except the token rank and token details the token rank single tool fetches the best holders their details and its globalRank alongside others in same network.\n    Use this when you need to know token rank of a single token based on contract address and exeact chain or network or when you need best holders of specific token in specifc network or chain\n\n    \u2014\u2014\u2014\n    \ud83d\udce5 Input Arguments:\n      \u2022 contract_address  \u2014 (string, required) The contract address of the token to evaluate\n      \u2022 network            \u2014 (string, optional) The network or the chain to filter (e.g. ETH for Ethereum, BNB for Binance, BASE for Base, SOLANA for solana) \n\n    \u27a1\ufe0f Example Use Cases:\n      \u2013 \u201cWhat is the token rank for token in ETH network?\u201d  \n      \u2013 \"Which are the best holders of this contract token address?\u201d\n      \u2013 \u201cWhat is the token rank and its best holders?\u201d\n\n    \u2014\u2014\u2014\n    \ud83d\udce4 Expected Output Schema (JSON):\n    {\n      \"message\": \"string\",                      // e.g. \u201cSuccessfully fetched records\u201d or error description\n      \"data\": {\n        \"contract\": {\n            \"contractAddress\": \"string\",       // unique contract or mint address (chain-specific format)\n            \"contractName\": \"string\",          // human-readable token name\n            \"ticker\": \"string\",                // token symbol (usually uppercase, but not guaranteed)\n            \"chain\": \"string\",                 // blockchain network (e.g. SOLANA | ETH | BNB | BASE)\n            \"category\": \"string\",              // primary category label (e.g. 'AI Token','RWA Token','DeFi Token','DeFAI Token','DePIN Token') \n            \"type\": \"string\",                  // asset classification (e.g. \u201ctoken\u201d | \u201cnft\u201d)\n            \"communityRank\": 0,                // integer \u2014 raw ranking based on community metrics\n            \"normalizedRank\": 0,               // integer \u2014 normalized or scaled ranking score\n            \"totalHolders\": 0,                 // integer \u2014 total unique wallet holders\n            \"lastProcessedAt\": \"ISO-8601\",     // timestamp when analytics were last computed\n            \"createdAt\": \"ISO-8601\",           // record creation timestamp\n            \"updatedAt\": \"ISO-8601\"            // record last update timestamp\n        },\n        \"topHolders\": [\n          {\n            \"contractAddress\": \"string\",        // associated contract address\n            \"Holder\": {\n              \"walletAddress\": \"string\",        // holder wallet address\n              \"chain\": \"string\",                // blockchain network of the wallet\n              \"balance\": \"string\",              // token balance (string to preserve precision)\n              \"walletAgeInDays\": 0,             // integer \u2014 age of wallet in days\n              \"transactionsNumber\": 0,          // integer \u2014 total transaction count\n              \"totalPoints\": 0.0,               // float \u2014 computed wallet scoring metric\n              \"globalRank\": 0                   // integer \u2014 wallet rank across entire system\n            }\n          }\n        ]\n      }\n    }\n    ",
+        "inputSchema": {
+          "properties": {
+            "contract_address": {
+              "title": "Contract Address",
+              "type": "string"
+            },
+            "network": {
+              "title": "Network",
+              "type": "string"
+            }
+          },
+          "required": [
+            "contract_address",
+            "network"
+          ],
+          "title": "token_rank_singleArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "additionalProperties": true,
+          "title": "token_rank_singleDictOutput",
+          "type": "object"
+        }
+      },
+      {
+        "name": "run_token_audit",
+        "description": "\n    \ud83d\ude80 Run Token Audit\n\n    Requests a Token Audit for a given token contract or returns already calculated audit data for requested token. This tool is \"get-or-create\":\n    it first checks if a completed audit already exists for this contract, and if so\n    returns the FULL risk report immediately. If no audit exists yet, it queues a new\n    one and returns a job_id + \"queued\" status instead.\n\n    Use this tool whenever a user asks to audit, scan, check, or evaluate a token/contract\n    for risk, scam signals, honeypot behavior, ownership risk, or liquidity risk. This should\n    be the FIRST and ONLY tool called for a new request \u2014 do not call get_token_audit_result\n    first \"just to check.\"\n\n    \u2014\u2014\u2014\n    \ud83d\udce5 Input Arguments:\n      \u2022 contract_address  \u2014 (string, required) The contract address of the token to audit\n      \u2022 network           \u2014 (string, required) The network/chain the token lives on (e.g. 'arbitrum', 'avalanche', 'base', 'bsc', 'eth', 'optimism', 'polygon')\n\n    \u2014\u2014\u2014\n    \ud83d\udce4 Response \u2014 TWO possible shapes, check which one you got:\n\n      A) Cached / already audited \u2192 audit_status = \"complete\"\n        Full risk report is returned immediately (same schema as get_token_audit_result).\n        Answer the user's question directly from this data. No further tool calls needed.\n\n      B) Not yet audited \u2192 no honeypot_analysis field, instead:\n        {\n          \"contract_address\": \"string\",\n          \"chain\": \"string\",\n          \"job_id\": \"string\",\n          \"status\": \"queued\",\n          \"message\": \"string\"   // includes poll instructions\n        }\n        In this case, follow up by calling get_token_audit_result with the same\n        chain + contract_address, polling every ~3-5 seconds until audit_status = \"complete\".\n\n    \u2014\u2014\u2014\n    \u27a1\ufe0f Example Use Cases:\n      \u2013 \"Audit this token contract for me: 0x...\"\n      \u2013 \"Is this BSC token safe? 0x...\"\n      \u2013 \"Run a risk scan on this contract before I buy\"\n      \u2013 \"Check if this address is a honeypot\"\n\n    \u2014\u2014\u2014\n    \u26a0\ufe0f Notes:\n      \u2022 Do not re-trigger a new audit for a contract that returns a \"queued\"/\"running\" job already in progress.\n      \u2022 Always first check if token was earlier audited based on response so you get directly the audited token result instead of scheduling new calculation.\n    ",
+        "inputSchema": {
+          "properties": {
+            "contract_address": {
+              "title": "Contract Address",
+              "type": "string"
+            },
+            "network": {
+              "title": "Network",
+              "type": "string"
+            }
+          },
+          "required": [
+            "contract_address",
+            "network"
+          ],
+          "title": "run_token_auditArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "additionalProperties": true,
+          "title": "run_token_auditDictOutput",
+          "type": "object"
+        }
+      },
+      {
+        "name": "get_token_audit_result",
+        "description": "\n    \ud83e\ude82 Get Token Audit Result\n\n    Fetches the current status or final results of a previously triggered Token Audit job for a given contract address and chain. \n    This is the SECOND step of the audit workflow, used to poll for and retrieve the full risk report after \"Run Token Audit\" has been called.\n    Call this tool immediately after \"Run Token Audit\" to check progress, and repeatedly (poll) until the response's audit_status field equals \"complete\". \n    While audit_status is anything else (e.g. \"queued\", \"running\", \"pending\"), treat the result as not-yet-ready: do not summarize partial/empty module data to the user, just report that the audit is still in progress (optionally showing elapsed time if available) and poll again shortly.\n    Once audit_status = \"complete\", this tool returns a full multi-module risk report \u2014 covering ownership control, liquidity health, supply/mint risk, transfer integrity, approve/permit safety, reentrancy, honeypot behavior, and an aggregated 0-100 risk score with verdict. Use this data to directly answer the user's question about token safety, risk factors, or red flags \u2014 do not fetch or re-trigger a new audit if a completed result already exists for this contract.\n\n    \u2014\u2014\u2014\n    \ud83d\udce5 Input Arguments:\n      \u2022 contract_address  \u2014 (string, required) The contract address of the token to evaluate\n      \u2022 network           \u2014 (string, required) The network/chain the token lives on (e.g. 'arbitrum', 'avalanche', 'base', 'bsc', 'eth', 'optimism', 'polygon')\n\n\n    \u27a1\ufe0f Example Use Cases:\n      \u2013 \"Is my audit for this token ready yet?\"\n      \u2013 \"What's the risk score and verdict for this contract?\"\n      \u2013 \"Who owns this token, can they mint or blacklist?\"\n      \u2013 \"Is this a honeypot? What are the flags?\"\n      \u2013 \"Give me the full breakdown of this contract's liquidity and ownership risk\"\n\n    \u2014\u2014\u2014\n    \ud83d\udce4 Expected Output Schema (JSON):\n    {\n      \"contract_address\": \"string\",\n      \"chain\": \"string\",\n      \"audit_status\": \"string\",\n      \"token_name\": \"string\",\n      \"token_symbol\": \"string\",\n      \"token_decimals\": \"integer\",\n      \"token_creator\": \"string\",\n      \"token_feeder\": \"string\",\n      \"source_verified\": \"boolean\",\n      \"is_proxy\": \"boolean\",\n      \"behavioral_is_honeypot\": \"boolean\",\n      \"honeypot_analysis\": {\n          \"verdict\": \"string\",\n          \"score\": \"integer\",\n          \"findings\": [\n              {\n                  \"rule\": \"string\",\n                  \"severity\": \"string\",\n                  \"function\": \"string or null\" ,\n                  \"detail\": \"string\"\n              }\n          ],\n          \"flags\": [\n              \"string\"\n          ]\n      },\n      \"aggregate\": {\n          \"verdict\": \"string\",\n          \"risk_score\": \"integer\",\n          \"primary_signal\": \"string\",\n          \"simulate\": \"boolean\",\n          \"version\": \"string\",\n          \"duration_ms\": \"integer\",\n          \"last_run\": \"ISO-8601\"\n      },\n      \"quick_stats\": [\n          {\n              \"label\": \"string\",\n              \"value\": \"string\",\n              \"tone\": \"string\"\n          },\n          {\n              \"label\": \"string\",\n              \"value\": \"string\",\n              \"tone\": \"string\"\n          },\n          {\n              \"label\": \"string\",\n              \"value\": \"string\",\n              \"tone\": \"string\"\n          }\n      ],\n      \"modules\": {\n          \"ownership\": {\n              \"status\": \"string\",\n              \"risk_score\": \"integer\",\n              \"owner_address\": \"string\",\n              \"owner_is_eoa\": \"boolean\",\n              \"owner_is_renounced\": \"boolean\",\n              \"blast_radius\": \"critical\",\n              \"can_mint\": \"boolean\",\n              \"can_pause\": \"boolean\",\n              \"can_blacklist\": \"boolean\",\n              \"can_upgrade\": \"boolean\",\n              \"can_drain\": \"boolean\",\n              \"has_timelock\": \"boolean\",\n              \"has_shadow\": \"boolean\"\n          },\n          \"liquidity\": {\n              \"status\": \"string\",\n              \"summary\": \"string\",\n              \"risk_score\": \"integer\",\n              \"pool_count\": \"integer\",\n              \"unknown_pool\": \"boolean\",\n              \"invariants\": [\n                  {\n                      \"code\": \"string\",\n                      \"label\": \"string\",\n                      \"status\": \"string\",\n                      \"severity\": \"string\",\n                      \"detail\": \"string\"\n                  }\n              ]\n          },\n          \"supply\": {\n              \"status\": \"pass\",\n              \"risk_score\": \"integer\",\n              \"has_mint\": \"boolean\",\n              \"deployer_pct\": \"decimal\",\n              \"hidden_mint\": \"boolean\"\n          },\n          \"transfer\": {\n              \"status\": \"pass\",\n              \"risk_score\": \"integer\",\n              \"method\": \"string\",\n              \"monitoring\": \"boolean\",\n              \"inv_t1_pass\": \"boolean\",\n              \"inv_t2_pass\": \"boolean\",\n              \"inv_t3_pass\": \"boolean\",\n              \"inv_t4_pass\": \"boolean\",\n              \"inv_t5_pass\": \"boolean\",\n              \"inv_t6_pass\": \"boolean\",\n              \"inv_t7_pass\": \"boolean\"\n          },\n          \"pausability\": {\n              \"status\": \"string\",\n              \"applicable\": \"boolean\"\n          },\n          \"approve\": {\n              \"status\": \"string\",\n              \"risk_score\": \"integer\",\n              \"method\": \"string\",\n              \"coverage\": \"string\",\n              \"inv1_pass\": \"boolean\",\n              \"inv2_pass\": \"boolean\",\n              \"inv3_pass\": \"boolean\",\n              \"inv5_pass\": \"boolean\",\n              \"inv6_pass\": \"boolean\"\n          },\n          \"permit\": {\n              \"status\": \"string\",\n              \"applicable\": \"boolean\"\n          },\n          \"reentrancy\": {\n              \"status\": \"string\",\n              \"risk_score\": \"integer\"\n          }\n        }\n    }\n\n    \u2014\u2014\u2014\n    \u26a0\ufe0f Notes:\n      \u2022 If audit_status is not \"complete\", most module/aggregate fields may be null, empty, or stale \u2014 do not present them as final results.\n      \u2022 A high risk_score or \"high\"/\"critical\" tone/severity fields indicate elevated danger; surface these prominently rather than burying them under passing modules.\n\n    ",
+        "inputSchema": {
+          "properties": {
+            "contract_address": {
+              "title": "Contract Address",
+              "type": "string"
+            },
+            "network": {
+              "title": "Network",
+              "type": "string"
+            }
+          },
+          "required": [
+            "contract_address",
+            "network"
+          ],
+          "title": "get_token_audit_resultArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "additionalProperties": true,
+          "title": "get_token_audit_resultDictOutput",
+          "type": "object"
+        }
+      },
+      {
+        "name": "agents_trust_score_list",
+        "description": "\n    \ud83e\ude82 Agent Trust Score List Tool\n\n    The ChainAware Agent Trust Score is a 0-1000 score that measures how safe it is to interact with any ERC-8004 registered AI agent.\n    Unlike voting-based reputation systems - where agents can upvote each other to manufacture trust - the Agent Trust Score is derived entirely from on-chain behavioral history. It cannot be earned in hours. It cannot be faked with a cluster of fresh wallets. It reflects the real-world track record of the human or entity controlling the agent.\n    As agentic commerce scales - with AI agents autonomously completing purchases on behalf of consumers across ChatGPT, Google Gemini, and Shopify - the question of which agents can be trusted to transact is no longer theoretical. ChainAware answers it with on-chain evidence, not peer endorsements.\n    It returns a list of Agents and their result.\n\n    \u2014\u2014\u2014\n    \ud83d\udce5 Input Arguments:\n      \u2022 page              \u2014 (string, required) Page number(page) during pagination\n      \u2022 limit             \u2014 (string, required) Number of items ot fetch during pagination\n      \u2022 sort_by           \u2014 (string, optional) Sort the returned agents based on e.g.: 'registered_at'  \n      \u2022 sort_order        \u2014 (string, optional but required if sort_by) 'asc' or 'desc' sorting the value of sort_by (default desc)\n      \u2022 registered_after  \u2014 (string, optional) Filter based on datetime when the Agent was registered.\n\n\n    \u27a1\ufe0f Example Use Cases:\n      \u2013 Give me a list of Agents and their trust score?\u201d\n      \u2013 \u201cWhich is the best Agent registered after 2025-01-01?\u201d  \n\n    \u2014\u2014\u2014\n    \ud83d\udce4 Expected Output Schema (JSON):\n    {\n    \"total\": \"integer\",\n    \"page\": 1,\n    \"limit\": 2,\n    \"results\": [\n        {\n            \"chain_id\": \"integer\",\n            \"agent_id\": \"integer\",\n            \"owner_address\": \"string\",\n            \"agent_wallet\": \"string\",\n            \"agent_uri\": \"string\",\n            \"meta_name\": \"string\",\n            \"registered_at\": \"ISO-8601\",\n            \"reputation_score\": \"integer\",\n            \"trust_score\": \"integer\",\n            \"trust_tier\": \"string\"\n        },\n        {\n            \"chain_id\": \"integer\",\n            \"agent_id\": \"integer\",\n            \"owner_address\": \"string\",\n            \"agent_wallet\": \"string\",\n            \"agent_uri\": \"string\",\n            \"meta_name\": \"string\",\n            \"registered_at\": \"ISO-8601\",\n            \"reputation_score\": \"integer\",\n            \"trust_score\": \"integer\",\n            \"trust_tier\": \"string\"\n        }\n      ]\n    }\n    ",
+        "inputSchema": {
+          "properties": {
+            "page": {
+              "default": 1,
+              "title": "Page",
+              "type": "integer"
+            },
+            "limit": {
+              "default": 5,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "sort_by": {
+              "default": "registered_at",
+              "title": "Sort By",
+              "type": "string"
+            },
+            "sort_order": {
+              "default": "desc",
+              "title": "Sort Order",
+              "type": "string"
+            },
+            "registered_after": {
+              "default": "2025-01-01",
+              "title": "Registered After",
+              "type": "string"
+            }
+          },
+          "title": "agents_trust_score_listArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "additionalProperties": true,
+          "title": "agents_trust_score_listDictOutput",
+          "type": "object"
+        }
+      },
+      {
+        "name": "agents_trust_score_single",
+        "description": "\n    \ud83e\ude82 Agent Trust Score Single Tool\n\n    Similar to Agent Trust List, Agent Trust Score Single is a 0-1000 score that measures how safe it is to interact with any ERC-8004 registered AI agent.\n    Unlike voting-based reputation systems - where agents can upvote each other to manufacture trust - the Agent Trust Score is derived entirely from on-chain behavioral history. It cannot be earned in hours. It cannot be faked with a cluster of fresh wallets. It reflects the real-world track record of the human or entity controlling the agent.\n    As agentic commerce scales - with AI agents autonomously completing purchases on behalf of consumers across ChatGPT, Google Gemini, and Shopify - the question of which agents can be trusted to transact is no longer theoretical. ChainAware answers it with on-chain evidence, not peer endorsements.\n    It returns the single details in depth for a requested Agent.\n\n    \u2014\u2014\u2014\n    \ud83d\udce5 Input Arguments:\n      \u2022 agent_id          \u2014 (integer, required) Agent id returned from agents_trust_score_list Tool\n      \u2022 chain_id          \u2014 (integer, required) Chain id where Agent is deployed/registred previously fetched from agents_trust_score_list Tool\n\n    \u27a1\ufe0f Example Use Cases:\n      \u2013 \"What is the trust score for this agent id 12314 on chain_id 56?\u201d\n    \u2014\u2014\u2014\n    \ud83d\udce4 Expected Output Schema (JSON):\n    {\n      \"agent_id\": \"integer\",\n      \"chain\": \"string\",\n      \"chain_id\": \"integer\",\n      \"owner_address\": \"string\",\n      \"agent_wallet\": \"string\",\n      \"wallet_verified\": \"boolean\",\n      \"agent_uri\": \"string\",\n      \"registered_at\": \"ISO-8601\",\n      \"fetched_at\": \"ISO-8601\",\n      \"error\": \"string\",\n      \"meta_name\": \"string\",\n      \"meta_description\": \"string\",\n      \"meta_image\": \"string\",\n      \"metadata_json\": {\n          \"type\": \"string\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"image\": \"string\",\n          \"active\": \"boolean\",\n          \"supportedTrust\": \"array[string]\"\n      },\n      \"registration\": {\n          \"agent_name\": \"string\",\n          \"agent_desc\": \"string\",\n          \"fetch_status\": \"string\",\n          \"fetched_at\": \"ISO-8601\",\n          \"raw_json\": {\n              \"type\": \"string\",\n              \"name\": \"string\",\n              \"description\": \"string\",\n              \"image\": \"string\",\n              \"active\": \"boolean\",\n              \"supportedTrust\": \"array[string]\"\n          }\n      },\n      \"wallets\": [\n          {\n              \"wallet_chain_id\": \"integer\",\n              \"wallet_address\": \"string\",\n              \"source\": \"registry\",\n              \"fetched_at\": \"ISO-8601\"\n          }\n      ],\n      \"reputation_score\": \"string\",\n      \"trust_score\": \"integer\",\n      \"trust_tier\": \"string\",\n      \"trust_flags\": \"array[string]\"\n    }\n    ",
+        "inputSchema": {
+          "properties": {
+            "agent_id": {
+              "title": "Agent Id",
+              "type": "integer"
+            },
+            "chain_id": {
+              "title": "Chain Id",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "agent_id",
+            "chain_id"
+          ],
+          "title": "agents_trust_score_singleArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "additionalProperties": true,
+          "title": "agents_trust_score_singleDictOutput",
+          "type": "object"
+        }
+      },
+      {
+        "name": "check_job_status",
+        "description": "\n    Check the progress of a scheduled batch calculation job.\n    Returns counts only (completed, failed, pending) \u2014 no wallet data.\n    Call this when the user asks whether a job is done or how it is progressing.\n    If status is 'processing' or 'pending', inform the user and do not call get_job_results.\n    Only suggest fetching results when status is 'completed' or 'partial'.\n    Both job_id and signature from schedule_calculation are required to call this tool.\n    Never call this without both values present in context.\n    \n    Args:\n        job_id: The job ID returned by schedule_calculation.\n        signature: The signature returned by schedule_calculation. Required for access.\n    ",
+        "inputSchema": {
+          "properties": {
+            "job_id": {
+              "title": "Job Id",
+              "type": "string"
+            },
+            "signature": {
+              "title": "Signature",
+              "type": "string"
+            }
+          },
+          "required": [
+            "job_id",
+            "signature"
+          ],
+          "title": "check_job_statusArguments",
+          "type": "object"
+        }
+      },
+      {
+        "name": "get_job_results",
+        "description": "\n    Retrieve the results of a completed or partially completed batch job.\n    Only call this when check_job_status shows status is 'completed' or 'partial'.\n    Returns a list of completed wallet addresses and the shared chain/network \u2014 \n    use these to query the main backend for actual wallet analysis data.\n    This does NOT return wallet data directly, only the address list needed to fetch it.\n    Both job_id and signature from schedule_calculation are required to call this tool.\n    Never call this without both values present in context.\n    \n    Args:\n        job_id: The job ID returned by schedule_calculation.\n        signature: The signature returned by schedule_calculation. Required for access.\n        include_failed: Set to true to also return failed addresses with their error reasons. Default false.\n    ",
+        "inputSchema": {
+          "properties": {
+            "job_id": {
+              "title": "Job Id",
+              "type": "string"
+            },
+            "signature": {
+              "title": "Signature",
+              "type": "string"
+            }
+          },
+          "required": [
+            "job_id",
+            "signature"
+          ],
+          "title": "get_job_resultsArguments",
+          "type": "object"
+        }
+      }
+    ]
+  }
+}

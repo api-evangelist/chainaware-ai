@@ -1,0 +1,248 @@
+generated: '2026-09-19'
+method: derived
+source: openapi/chainaware-ai-enterprise-api-openapi.yml
+docs:
+- https://chainaware.ai/learn/api/fraud-detection-api.html
+- https://chainaware.ai/learn/api/user-segmentation-api.html
+- https://chainaware.ai/learn/prediction-mcp/tool-agents-trust-score-single.html
+summary: >-
+  A scoring API has a thin data model: there are no server-side resources with ids, only two addressable SUBJECTS
+  — a Wallet (walletAddress + network) and a Contract/pool (contract or pair address + network) — and five read-only
+  score documents computed about them. Identity is the chain address itself; there are no ChainAware-minted ids,
+  no id prefixes and no cross-resource links other than the addresses embedded in a rug-pull result. The MCP-only
+  products add two more subjects (Token, ERC-8004 Agent) and a Batch Job, described from the tool schemas and docs
+  since no OpenAPI covers them.
+identity:
+  wallet: (network, walletAddress) — hex address or ENS name (docs accept vitalik.eth); no provider id
+  contract: (network, contract or liquidity-pool address)
+  erc8004_agent: (chain_id, agent_id) — the ERC-8004 Identity Registry key (MCP only)
+  batch_job: job_id (uuid) + signature (hex) — both required, neither recoverable if lost (MCP only)
+entities:
+- name: FraudCheckResponse
+  schema: openapi/chainaware-ai-enterprise-api-openapi.yml#/components/schemas/FraudCheckResponse
+  returned_by: checkWalletFraud
+  subject: Wallet
+  fields:
+  - message
+  - walletAddress
+  - chain
+  - status
+  - probabilityFraud
+  - token
+  - lastChecked
+  - forensic_details
+  - checked_times
+  - createdAt
+  - updatedAt
+  - sanctionData
+- name: WalletAuditResponse
+  schema: openapi/chainaware-ai-enterprise-api-openapi.yml#/components/schemas/WalletAuditResponse
+  returned_by: auditWalletBehaviour
+  subject: Wallet
+  fields:
+  - message
+  - walletAddress
+  - status
+  - probabilityFraud
+  - token
+  - chain
+  - lastChecked
+  - forensic_details
+  - categories
+  - riskProfile
+  - segmentInfo
+  - experience
+  - intention
+  - protocols
+  - userDetails
+  - riskCapability
+  - recommendation
+  - checked_times
+  - createdAt
+  - updatedAt
+  - sanctionData
+- name: RugPullResponse
+  schema: openapi/chainaware-ai-enterprise-api-openapi.yml#/components/schemas/RugPullResponse
+  returned_by: checkRugPull
+  subject: Contract
+  fields:
+  - message
+  - contractAddress
+  - pairAddress
+  - contractCreatorAddress
+  - risk_score
+  - risk_status
+  - risk_indicators
+  - liquidityEvent
+  - status
+  - probabilityFraud
+  - chain
+  - lastChecked
+  - contractCreationTime
+  - forensic_details
+  - checked_times
+  - createdAt
+  - updatedAt
+- name: WalletSegmentResponse
+  schema: openapi/chainaware-ai-enterprise-api-openapi.yml#/components/schemas/WalletSegmentResponse
+  returned_by: getWalletSegment
+  subject: Wallet
+  fields:
+  - message
+  - walletAddress
+  - walletQuality
+  - categories
+  - riskProfile
+  - segmentInfo
+  - experience
+  - intention
+  - protocols
+  - userDetails
+  - recommendation
+  - sanctionData
+- name: CreditScoreResponse
+  schema: openapi/chainaware-ai-enterprise-api-openapi.yml#/components/schemas/CreditScoreResponse
+  returned_by: getCreditScore
+  subject: Wallet
+  fields:
+  - message
+  - creditData
+request_bodies:
+- name: FraudCheckRequestBody
+  required:
+  - network
+  - walletAddress
+  fields:
+    network:
+    - ETH
+    - BNB
+    - POLYGON
+    - TON
+    - BASE
+    - TRON
+    - HAQQ
+    walletAddress: string
+    calculate: boolean
+- name: WalletAuditRequestBody
+  required:
+  - network
+  - walletAddress
+  fields:
+    network:
+    - ETH
+    - BNB
+    - BASE
+    - HAQQ
+    - SOLANA
+    walletAddress: string
+    calculate: boolean
+- name: RugPullRequestBody
+  required:
+  - network
+  - walletAddress
+  fields:
+    network:
+    - ETH
+    - BNB
+    - BASE
+    - HAQQ
+    walletAddress: string
+- name: WalletSegmentRequestBody
+  required:
+  - walletAddress
+  - network
+  fields:
+    walletAddress: string
+    network:
+    - ETH
+    - BNB
+    - BASE
+    - HAQQ
+    - SOLANA
+- name: CreditScoreRequestBody
+  required:
+  - network
+  - walletAddress
+  fields:
+    network:
+    - ETH
+    walletAddress: string
+mcp_only_entities:
+- name: Token (Token Rank / Token Audit)
+  key: (network, contract_address)
+  fields:
+  - rank
+  - community strength
+  - top holders
+  - audit aggregate.risk_score 0-100
+  - aggregate.verdict CLEAN|SUSPICIOUS|HIGH RISK|HONEYPOT|THEFT|UNVERIFIABLE
+  - per-module status pass|fail|warn|n/a
+  source: mcp/chainaware-ai-mcp-tools.json + https://chainaware.ai/learn/token-audit/index.html
+- name: ERC-8004 Agent
+  key: (chain_id, agent_id)
+  fields:
+  - owner_address
+  - agent_wallet
+  - wallet_verified
+  - agent_uri
+  - registered_at
+  - metadata_json{type,name,description,image,active,supportedTrust[]}
+  - registration{agent_name,agent_desc,fetch_status}
+  - wallets[]{wallet_chain_id,wallet_address,source}
+  - reputation_score
+  - trust_score 0-1000
+  - trust_tier
+  - trust_flags[]
+  source: https://chainaware.ai/learn/prediction-mcp/tool-agents-trust-score-single.html
+- name: Batch Job
+  key: job_id + signature
+  fields:
+  - total_items
+  - chunks_enqueued
+  - status pending|processing|partial|completed
+  - completed/failed/pending counts
+  - result address list
+  source: https://chainaware.ai/learn/prediction-mcp/tool-predictive-fraud-batch.html
+relationships:
+- from: RugPullResponse
+  to: Wallet
+  type: belongs_to
+  via: contractCreatorAddress
+  note: The deployer wallet whose behavioural history feeds the rug-pull score; nullable.
+- from: RugPullResponse
+  to: Contract
+  type: has_one
+  via: pairAddress
+  note: The DEX liquidity pair analysed alongside the token contract.
+- from: FraudCheckResponse
+  to: SanctionEntry
+  type: has_many
+  via: sanctionData[]
+  note: Zero or more sanctions-list matches {category,name,description,url,isSanctioned}.
+- from: FraudCheckResponse
+  to: ForensicDetails
+  type: has_one
+  via: forensic_details
+  note: 19 string flags (cybercrime, money_laundering, mixer, sanctioned, …).
+- from: WalletAuditResponse
+  to: FraudCheckResponse
+  type: extends
+  via: shared fields status/probabilityFraud/forensic_details
+  note: >-
+    The audit is a superset of the fraud check plus experience, intention (14 Prob_* signals), categories[], protocols[],
+    riskProfile[], recommendation, segmentInfo, userDetails.
+- from: ERC-8004 Agent
+  to: Wallet
+  type: has_many
+  via: wallets[] / owner_address / agent_wallet
+  note: >-
+    MCP only; the agent trust score is computed from the owner and feeder wallets, which can themselves be scored
+    with predictive_fraud.
+- from: Batch Job
+  to: Wallet
+  type: has_many
+  via: result address list
+  note: >-
+    MCP only; results are addresses, and the per-wallet documents are fetched with the single-wallet tools.
+render: null
+note: No subway/ diagram exists for this repo.

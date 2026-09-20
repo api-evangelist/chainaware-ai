@@ -1,0 +1,35 @@
+generated: '2026-09-19'
+method: searched
+source: https://chainaware.ai/learn/growth-tech/web3-user-analytics.html
+docs:
+- https://chainaware.ai/learn/growth-tech/index.html
+- https://chainaware.ai/learn/growth-tech/growth-agents.html
+- https://chainaware.ai/blog/use-chainaware-as-business/
+summary: >-
+  ChainAware ships one client-side component family: a JavaScript pixel delivered as a Google Tag Manager tag
+  ("ChainAware Pixel" / "Growth Agents via GTM"). Added to a dApp's GTM container and triggered on the
+  wallet-connect event, it profiles the connecting wallet server-side and pushes the wallet segment,
+  experience level, fraud score, intent scores and behavioural profile into the page's dataLayer, where
+  existing GTM tags personalise copy, CTAs, routing and ad suppression. Setup is documented as "no backend
+  engineering", "under 30 minutes". The tag snippet / loader URL itself is not printed on the public docs
+  page (it is obtained inside the business account), so loader_url is null.
+families:
+- id: chainaware-pixel-gtm
+  name: ChainAware Pixel (Google Tag Manager tag)
+  kind: analytics-and-personalisation pixel
+  loader: Google Tag Manager custom tag
+  loader_url: null
+  trigger: wallet-connect event
+  outputs_to: 'window.dataLayer — wallet segment, experience level, fraud score, intent scores, behavioural profile'
+  used_for: [Web3 User Analytics dashboard, Growth Agents on-connect personalisation, 1:1 wallet targeting]
+  setup_steps:
+  - "Add ChainAware's GTM tag to your container"
+  - Set the trigger to your wallet connect event
+  - ChainAware returns wallet segment, experience level, fraud score, and behavioural profile to the dataLayer
+  - Use dataLayer variables in any existing GTM tag — personalise copy, fire different pixels, suppress certain users from ads
+  case_study: SmartCredit.io — integrated via GTM in under 30 minutes; 8x engagement, 2x primary conversions over six months (provider-reported)
+  docs: https://chainaware.ai/learn/growth-tech/web3-user-analytics.html
+  privacy_note: 'Privacy policy §4 covers "Personalization Tracking" and a cookie consent banner; the pixel processes wallet addresses, which the policy treats as personal data where linkable to an individual.'
+not_components:
+- {name: Telegram Mini App, url: 'https://chainaware.ai/telegram', note: an end-user app inside Telegram, not an embeddable component}
+- {name: Web3 User Analytics dashboard, note: a hosted dashboard for business accounts, not embeddable; recorded as the consumer of the pixel above}

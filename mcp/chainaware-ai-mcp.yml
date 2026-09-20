@@ -1,0 +1,112 @@
+generated: '2026-09-19'
+method: probed
+status: published
+source: https://prediction.mcp.chainaware.ai/sse
+docs: https://chainaware.ai/learn/prediction-mcp/index.html
+setup_docs: https://chainaware.ai/learn/prediction-mcp/setup.html
+repository: https://github.com/ChainAware/behavioral-prediction-mcp
+registry:
+  official_mcp_registry:
+    name: io.github.ChainAware/chainaware-behavioral-prediction-mcp
+    version: 1.0.0
+    published: '2026-01-19'
+    status: active
+    remote: {type: sse, url: 'https://prediction.mcp.chainaware.ai/sse', header: X-API-Key (isRequired true per server.json)}
+    url: https://registry.modelcontextprotocol.io/v0/servers?search=chainaware
+  glama: {name: behavioral-prediction-mcp, framework: FastMCP 2.12.0, transport: [sse]}
+summary: >-
+  ChainAware operates ONE hosted MCP server, reachable at two hostnames that serve the same 25,293-byte landing
+  page and the same tool set: prediction.mcp.chainaware.ai (the name every provider document uses — docs,
+  README, server.json, the MCP registry, AGENTS.md, SKILL.md) and mcp.chainaware.ai (the name in llms.txt and
+  the site sitemap). Transport is legacy HTTP+SSE: GET /sse opens the stream and emits an endpoint event
+  naming POST /messages/?session_id=<uuid>; each POST is acknowledged 202 Accepted and the JSON-RPC reply
+  arrives on the stream. initialize and tools/list answered ANONYMOUSLY on 2026-09-19 — serverInfo
+  {name: ChainAwareMCP, version: 1.11.0}, protocolVersion 2025-03-26, capabilities tools/prompts/resources
+  (listChanged false), no instructions — returning fourteen tools with real inputSchemas (saved verbatim to
+  mcp/chainaware-ai-mcp-tools.json). Authorship is unambiguous: the tool names are ChainAware products, the
+  descriptions cite ChainAware accuracy claims, and the MIT-licensed FastMCP source is on the provider's
+  GitHub. The declared MCP paths /mcp (Streamable HTTP) and /.well-known/oauth-protected-resource both 404 on
+  both hosts; the only well-known documents the MCP hosts serve are /.well-known/x402 and /.well-known/x402.json.
+deployment:
+  mode: remote
+  endpoint: https://prediction.mcp.chainaware.ai/sse
+  alias_endpoint: https://mcp.chainaware.ai/sse
+  transport: sse
+  messages_endpoint: https://prediction.mcp.chainaware.ai/messages/?session_id=<from the SSE endpoint event>
+  auth: api-key
+  verified: probed
+  note: >-
+    A hosted HTTPS SSE endpoint an MCP client connects to directly. No stdio package is published on npm or
+    PyPI; the documented Claude Desktop config bridges the remote server with `npx mcp-remote <sse url>
+    --header "X-API-Key: ..."`, which is a client bridge, not a local server. The FastMCP source can be run
+    locally (the README's example clients point at http://localhost:5000/sse) but the provider documents no
+    install command for that, so mode is remote, not both. auth is api-key in three documented forms: an
+    X-API-Key header on the SSE connection (Claude Code / Cursor / SDK examples), an ?apiKey= query parameter
+    on the SSE URL (ChatGPT and Claude Web integrations), and — for the six tools that require it — an
+    in-band `apiKey` argument inside the tool call. The connection itself, initialize and tools/list need no
+    credential. Eight tools need no key at all per the provider's docs and the live schemas (token_rank_list,
+    token_rank_single, run_token_audit, get_token_audit_result, agents_trust_score_list,
+    agents_trust_score_single, check_job_status, get_job_results). x402 pay-per-call is declared "at the
+    backend API level" (/.well-known/x402.json: backend https://api.chainaware.ai) and the README says the
+    apiKey argument may be omitted when paying with x402; no OAuth metadata is served on any host.
+servers:
+- id: chainaware-behavioral-prediction
+  name: ChainAwareMCP
+  endpoint: https://prediction.mcp.chainaware.ai/sse
+  transport: sse
+  auth: api-key (X-API-Key header, ?apiKey= query, or in-band apiKey tool argument); anonymous initialize/tools/list
+  payment: x402 (USDC on Base) supported at the backing API; HTTP 402 challenge documented in the README tool error tables
+  status: live
+  probe:
+    fetched: '2026-09-19'
+    sse_open: {http_status: 200, content_type: 'text/event-stream; charset=utf-8', server: uvicorn, via: CloudFront}
+    endpoint_event: /messages/?session_id=<uuid>
+    initialize:
+      post_status: 202
+      protocol_version: '2025-03-26'
+      server_info: {name: ChainAwareMCP, version: 1.11.0}
+      capabilities: {experimental: {}, prompts: {listChanged: false}, resources: {subscribe: false, listChanged: false}, tools: {listChanged: false}}
+    tools_list:
+      post_status: 202
+      tool_count: 14
+      tools_with_output_schema: 10
+      file: mcp/chainaware-ai-mcp-tools.json
+    other_paths:
+      - {url: 'https://mcp.chainaware.ai/mcp', status: 404, note: no Streamable HTTP endpoint}
+      - {url: 'https://mcp.chainaware.ai/.well-known/oauth-protected-resource', status: 404}
+      - {url: 'https://prediction.mcp.chainaware.ai/.well-known/oauth-protected-resource', status: 404}
+      - {url: 'https://mcp.chainaware.ai/.well-known/x402.json', status: 200, file: well-known/chainaware-ai-x402.json}
+    landing_page_endpoints:
+      - 'GET / — landing page listing the 14 tools'
+      - 'GET /sse — MCP SSE stream'
+      - 'POST /messages/ — MCP message endpoint keyed by session_id'
+      - 'POST /chat — single-turn GPT-4o agent that picks and calls a tool (non-MCP convenience endpoint)'
+      - 'POST /generate-stream — streaming Qwen3-32b agent response (non-MCP convenience endpoint)'
+      - 'GET /.well-known/x402 and /.well-known/x402.json — x402 payment discovery'
+version_drift:
+  note: >-
+    Three version numbers coexist: the live server reports 1.11.0; server.json and the MCP registry entry
+    (published 2026-01-19) say 1.0.0; the repository's last commit is 2026-08-11. The provider's own pages also
+    disagree on tool count — the landing page and llms.txt say 14 (correct), the docs nav says 6, the setup
+    page says "all ten tools", and the subagent count is given as 32 or 34 (the repo ships 34 files).
+tool_count: 14
+tools:
+- {name: predictive_fraud, category: fraud, key_required: true, description: 'AI fraud probability score (0-1) and AML forensic flags for a single wallet. Networks ETH, BNB, POLYGON, TON, BASE, TRON, HAQQ.', rest_operation: checkWalletFraud}
+- {name: predictive_fraud_batch, category: fraud-batch, key_required: true, description: 'Schedule fraud analysis for up to 1,000 wallets; returns job_id + signature immediately.', rest_operation: null}
+- {name: predictive_behaviour, category: behaviour, key_required: true, description: 'Next-action predictions, risk profile, DeFi category segmentation and personalised recommendations for a wallet. Networks ETH, BNB, BASE, HAQQ, SOLANA.', rest_operation: auditWalletBehaviour}
+- {name: predictive_behaviour_batch, category: behaviour-batch, key_required: true, description: 'Schedule behaviour analysis for up to 1,000 wallets; returns job_id + signature immediately.', rest_operation: null}
+- {name: predictive_rug_pull, category: rug-pull, key_required: true, description: 'Forecasts whether a liquidity pool or contract is likely to rug pull; returns risk indicators and liquidity events. Networks ETH, BNB, BASE, HAQQ.', rest_operation: checkRugPull}
+- {name: credit_score, category: credit, key_required: true, description: 'AI-driven crypto trust score (1-9) combining inflows/outflows, fraud signals and social graph. ETH only.', rest_operation: getCreditScore}
+- {name: token_rank_list, category: token-rank, key_required: false, description: 'Paginated, filterable list of tokens ranked by holder community strength (limit/offset, sort, category filter, name search). Networks ETH, BNB, BASE, SOLANA.', rest_operation: null}
+- {name: token_rank_single, category: token-rank, key_required: false, description: 'Community rank and top holders for a single token contract address and network.', rest_operation: null}
+- {name: run_token_audit, category: token-audit, key_required: false, description: 'Get-or-create: returns a cached full audit immediately, or queues a new one returning a job_id. Lowercase network ids eth, bsc, base, arbitrum, avalanche, optimism, polygon.', rest_operation: null}
+- {name: get_token_audit_result, category: token-audit, key_required: false, description: 'Poll for a completed token audit; full risk report when audit_status = "complete".', rest_operation: null}
+- {name: agents_trust_score_list, category: agent-trust, key_required: false, description: 'Paginated list of ERC-8004 AI agents with 0-1000 on-chain trust scores and tiers (page/limit, sort_by, sort_order, registered_after).', rest_operation: null}
+- {name: agents_trust_score_single, category: agent-trust, key_required: false, description: 'Detailed trust report for a single ERC-8004 agent by agent_id and chain_id.', rest_operation: null}
+- {name: check_job_status, category: batch-jobs, key_required: false, description: 'Progress of a batch job (completed / failed / pending counts). Requires job_id + signature.', rest_operation: null}
+- {name: get_job_results, category: batch-jobs, key_required: false, description: 'Wallet address list from a completed or partial batch job. Call only when status is completed or partial.', rest_operation: null}
+subagents:
+  count: 34
+  location: https://github.com/ChainAware/behavioral-prediction-mcp/tree/main/.claude/agents
+  index: skills/chainaware-ai-AGENTS.md
+  note: Provider-published Claude Code subagent definitions wrapping these tools; also mirrored as Eliza character files (eliza/characters/) and an OpenAI skill definition (agents/openai.yaml) in the same repository.

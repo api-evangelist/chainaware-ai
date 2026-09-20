@@ -1,0 +1,80 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: https://chainaware.ai/privacy/
+docs:
+- https://chainaware.ai/privacy/
+- https://chainaware.ai/terms/
+operator:
+  legal_entity: Decentral Tech OÜ, reg. Nr. 14907413, Estonia
+  ip_holder: Decentral Prediction Ltd. (BVI)
+  source: https://chainaware.ai/terms/
+signals:
+  data_subject_request:
+    url: https://chainaware.ai/privacy/
+    section: '7. Your Rights'
+    channel: support@chainaware.ai
+    stated_sla: 'We will respond within a reasonable time and may need to verify your identity before acting on certain requests.'
+    rights_named: [be informed, access, correction, erasure, restriction, objection to legitimate-interest processing, withdrawal of consent (EU/EEA/UK); know, delete, correct, opt out of sale/sharing (California and other US states); access/copy/correct/delete (all users)]
+    evidence:
+    - source: https://chainaware.ai/privacy/
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: >-
+        "All users, regardless of location, may contact us at support@chainaware.ai to ask what information we
+        hold about you, request a copy of it, ask us to correct it, or ask us to delete it. We will respond
+        within a reasonable time and may need to verify your identity before acting on certain requests."
+    note: >-
+      A documented request process with a named channel; the response period is deliberately left verbatim
+      ("a reasonable time") rather than normalised to a number the provider did not state. It is a section of
+      the privacy policy, not a dedicated intake page or form, and no API endpoint exists for it. The policy
+      also states "We do not sell personal information for monetary consideration" and that opt-out of
+      "sharing" is via the cookie banner.
+  ai_transparency:
+    url: https://chainaware.ai/terms/
+    section: Nature of the Services / limitations
+    evidence:
+    - source: https://chainaware.ai/terms/
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: >-
+        "The Platform's fraud detection, rug-pull detection, and behavioural prediction Services (including
+        those underlying Growth Agents) are based on statistical models and machine learning trained on
+        historical and on-chain data. Detection and prediction accuracy varies by blockchain network, asset
+        type, and over time as models are updated, and no score, flag, or prediction is guaranteed to be
+        correct in any individual case. The Platform's Services may produce false positives ... and false
+        negatives."
+    - source: https://chainaware.ai/terms/
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: >-
+        "the Business Client's own compliance function retains sole responsibility and authority for all
+        onboarding, restriction, reporting, and other compliance decisions concerning any User, wallet, or
+        transaction, whether or not flagged by the Service."
+    note: >-
+      A contractual disclosure that the outputs are machine-learning predictions with stated error modes and
+      that a human function, not the model, makes the consequential decision. This is the substance of an
+      AI-output transparency statement carried in the Terms rather than on a dedicated /ai page (every /ai*
+      path on chainaware.ai returns the SPA shell, so no such page could be verified). The Terms also require
+      lending customers to meet "adverse action or disclosure obligations towards its own Users".
+not_recorded:
+  subprocessors: 'Privacy §6 names CATEGORIES only ("hosting, analytics, and payment infrastructure providers"); no dated vendor list, so no Subprocessors signal.'
+  data_residency: 'Privacy §9 says data "may be processed or stored in countries other than your own" with "reasonable steps" — no named regions or mechanism. Infrastructure observed: AWS CloudFront/API Gateway on every API host, an S3 bucket in eu-central-1 for site assets. Not a published residency commitment.'
+  incident_notification: 'No breach-notification SLA published; the DPA the Terms reference for processor services is not reachable anonymously.'
+  age_assurance: 'Privacy §11 states the Platform is not directed at under-18s and no data is knowingly collected from them — a statement, not an age-assurance mechanism.'
+  global_privacy_control: 'Neither GPC nor Do Not Track is mentioned; the only opt-out named is the cookie banner. honored is therefore not set.'
+  sbom, support_lifetime, accessibility_conformance, training_data_summary, transparency_report, notice_and_action, exit_assistance: 'No page or statement found. Every conventional path (/accessibility, /legal/subprocessors, /legal/dpa, /privacy/requests, /transparency, /security/sbom, /ai/transparency) returns the 7,355-byte SPA shell on chainaware.ai, which is a soft-404, so absence on those paths is unverifiable by probe and nothing is claimed either way.'
+anonymous_access_note:
+  source: https://chainaware.ai/privacy/
+  section: '12. Anonymous MCP and x402 Access'
+  quote: >-
+    "Where the Platform's MCP server is accessed without an Enterprise Account, including access paid for via
+    the x402 payment standard, we process only the wallet address and other parameters included in each
+    request, and technical request metadata, as needed to provide the requested output and for security,
+    billing, and abuse-prevention purposes. No account or additional personal information is collected for
+    this access method."
+  note: A privacy statement written specifically for agent and pay-per-call access — unusual and worth an agent knowing before it calls.
+probes:
+- {url: 'https://chainaware.ai/privacy/', status: 200, bytes: 58600, note: real server-rendered page}
+- {url: 'https://chainaware.ai/terms/', status: 200, bytes: 75401, note: 'real page (/terms 302s to /terms/)'}
+- {url: 'https://chainaware.ai/.well-known/chainaware-ai-negative-control-7852a6b7.json', status: 200, bytes: 7355, note: SPA catch-all control — any 7,355-byte 200 on this host is not a page}

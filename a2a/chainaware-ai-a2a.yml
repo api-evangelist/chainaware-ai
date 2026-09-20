@@ -1,0 +1,177 @@
+generated: '2026-09-19'
+method: probed
+source: https://api.chainaware.ai/.well-known/agent-card.json
+card:
+  file: a2a/chainaware-ai-agent-card.json
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: api.chainaware.ai
+  also_served_at: /.well-known/agent.json
+  note: >-
+    Served from the API host, not the primary domain. chainaware.ai is an Angular single-page app whose router
+    answers HTTP 200 with the same 7,355-byte HTML shell for every path, including both agent-card paths and a
+    negative-control path that cannot exist (/.well-known/chainaware-ai-negative-control-7852a6b7.json, 200,
+    7,355 bytes) — so nothing on the apex is a document. api.chainaware.ai is a different origin (Apache +
+    Express behind CloudFront): it returns a real 404 for /.well-known/oauth-protected-resource, for a
+    negative-control path (10 bytes) and for every other named well-known path, and returns this 10,778-byte
+    application/json card — byte-identical — at BOTH /.well-known/agent-card.json (canonical) and the legacy
+    /.well-known/agent.json. The MCP hosts (mcp.chainaware.ai, prediction.mcp.chainaware.ai) 404 both paths,
+    although chainaware.ai/llms.txt says the card is at mcp.chainaware.ai/.well-known/agent.json; that
+    statement is stale or wrong. Ownership is not in question: provider.organization is "ChainAware.ai" with
+    provider.url https://chainaware.ai/, iconUrl is on chainaware.ai, documentationUrl is
+    swagger.chainaware.ai, the securitySchemes description sends key buyers to chainaware.ai/pricing, and the
+    five skills are the same five operations the Enterprise API Swagger publishes.
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://api.chainaware.ai/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json; charset=utf-8
+  body_bytes: 10778
+  etag: W/"2a1a-RWYG8zNhRirG2T4j4pYmDFvRTI4"
+  cors: 'access-control-allow-origin: *'
+  hsts: 'strict-transport-security: max-age=31536000; includeSubDomains'
+  body_parses_as: JSON object with AgentCard shape (name, description, version, url, preferredTransport, protocolVersion, provider, supportedInterfaces, capabilities, securitySchemes, security, securityRequirements, iconUrl, documentationUrl, defaultInputModes, defaultOutputModes, skills)
+  corroborating_probes:
+  - url: https://api.chainaware.ai/.well-known/agent.json
+    http_status: 200
+    note: Legacy pre-0.3 path; identical 10,778-byte body.
+  - url: https://api.chainaware.ai/.well-known/chainaware-ai-negative-control-8b98772f.json
+    http_status: 404
+    note: Negative control — the host is not a catch-all.
+  - url: https://api.chainaware.ai/api/a2a
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"tasks/get","params":{"id":"apievangelist-nonexistent-probe"}}'
+    http_status: 404
+    response: '{"error":"Not found"}'
+    note: The card's declared url, without a trailing slash, is not routed for POST; GET and OPTIONS (204) behave the same way.
+  - url: https://api.chainaware.ai/api/a2a/
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"message/send","params":{}}'
+    http_status: 200
+    response_file: a2a/chainaware-ai-a2a-message-send-probe.json
+    note: >-
+      A live A2A JSON-RPC responder at the trailing-slash path: returns a JSON-RPC 2.0 result shaped as an A2A
+      Message (messageId, role "agent", parts[{kind: text}]) whose text lists the five tools, says to pass
+      X-API-Key or "use realtime x402 pay per use method", and points at chainaware.ai/pricing. No key or
+      payment was sent and nothing was purchased.
+  - url: https://api.chainaware.ai/api/a2a/
+    method: POST
+    body: '{"jsonrpc":"2.0","id":2,"method":"tasks/get","params":{"id":"apievangelist-nonexistent"}}'
+    http_status: 404
+    response: '{"error":"Not found"}'
+    note: tasks/get is not implemented; the server answers with an HTTP 404 rather than an A2A -32001 TaskNotFound error. agent/getAuthenticatedExtendedCard also 404s.
+  - url: https://api.chainaware.ai/api/capabilities
+    http_status: 200
+    content_type: application/json; charset=utf-8
+    file: a2a/chainaware-ai-api-capabilities.json
+    note: The detailsUrl named in the card's x402 extension params. Lists the five endpoints with inputSchema, outputSchema, pricing ($0.15 USDC per call, eip155:8453, receiver 0x9e60Ca86…CeA08) and example prompts.
+  - url: https://api.chainaware.ai/api/fraud/check
+    method: POST
+    body: '{"network":"ETH","walletAddress":"0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"}'
+    http_status: 402
+    response: '{}'
+    response_header: 'payment-required: <base64 x402 v2 PaymentRequirements>'
+    decoded_file: a2a/chainaware-ai-x402-payment-required.json
+    note: >-
+      Real x402 v2 challenge: scheme exact, network eip155:8453, amount 150000 (USDC has 6 decimals, so $0.15),
+      asset 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913 (USDC on Base), payTo 0x9e60Ca8606b39533B9E1bC460f6d0C92c16CeA08,
+      maxTimeoutSeconds 300, plus a "bazaar" extension carrying the endpoint's input/output schema. No payment
+      was made. The address probed is the public vitalik.eth address the provider's own docs use as their example.
+  - url: https://a2aregistry.org
+    note: This provider entered the harvest backlog from the a2a-registry listing (x-source harvest:a2a-registry). The card above was fetched directly from the provider's host, not from the registry.
+agent_card:
+  name: ChainAware.ai API
+  description: >-
+    On-chain wallet fraud scoring, behavioural prediction, credit trust rating, and smart contract rug pull
+    detection engine. Supports ETH, BNB, BASE, POLYGON, SOLANA, TON, TRON, and HAQQ networks.
+  url: https://api.chainaware.ai/api/a2a
+  version: 1.0.0
+  protocol_version: '0.3.0'
+  preferred_transport: JSONRPC
+  supported_interfaces:
+  - {url: 'https://api.chainaware.ai/api/a2a', transport: JSONRPC}
+  provider:
+    organization: ChainAware.ai
+    url: https://chainaware.ai/
+  capabilities:
+    streaming: false
+    push_notifications: false
+    state_transition_history: false
+    extensions:
+    - uri: https://x402.org/extension/v1
+      required: false
+      description: x402 HTTP payment protocol. Each API call requires an X-PAYMENT header with a valid USDC micropayment on the configured EVM network or an x-api-key in header.
+      params: {protocol: x402, scheme: exact, currency: USDC, network: 'eip155:8453', receiver: '0x9e60Ca8606b39533B9E1bC460f6d0C92c16CeA08', pricePerCall: '$0.15', detailsUrl: 'https://api.chainaware.ai/api/capabilities'}
+  security_schemes:
+    x402Payment: {type: apiKey, in: header, name: X-PAYMENT}
+    apiKey: {type: apiKey, in: header, name: x-api-key}
+  security: [{x402Payment: []}, {apiKey: []}]
+  default_input_modes: [application/json]
+  default_output_modes: [application/json]
+  icon_url: https://chainaware.ai/assets/brand/chainawareai-logo.svg
+  documentation_url: https://swagger.chainaware.ai/
+  skill_count: 5
+  skills:
+  - {id: fraud_check, name: Fraud Check, endpoint: 'POST https://api.chainaware.ai/api/fraud/check', tags: [fraud, wallet, risk, screening, blockchain], rest_operation: checkWalletFraud}
+  - {id: fraud_audit, name: Wallet Audit, endpoint: 'POST https://api.chainaware.ai/api/fraud/audit', tags: [behavior, ai, wallet, prediction, profiling], rest_operation: auditWalletBehaviour}
+  - {id: wallet_segment, name: Wallet Segmentation, endpoint: 'POST https://api.chainaware.ai/api/segmentation/wallet-segment', tags: [segmentation, ai, wallet, quality, classification], rest_operation: getWalletSegment}
+  - {id: rug_pull, name: Rug Pull Check, endpoint: 'POST https://api.chainaware.ai/api/rug/pull-check', tags: [rug-pull, predit-rug-pull, rug-pull-check], rest_operation: checkRugPull}
+  - {id: credit_score, name: Credit Score, endpoint: 'POST https://api.chainaware.ai/api/users/credit-score', tags: [defi-score, trust-score, credit-score, rug-pull, contract, defi], rest_operation: getCreditScore}
+  skill_shape: >-
+    Every skill carries id, name, description, tags, examples, inputModes/outputModes (application/json),
+    per-skill security (x402Payment OR apiKey) and a metadata block naming the backing REST endpoint, method,
+    inputSchema and outputSchema — the same five operations the Enterprise API Swagger publishes, served here
+    from api.chainaware.ai/api/* instead of enterprise.api.chainaware.ai. The rest_operation column maps each
+    skill to the operationId in openapi/chainaware-ai-enterprise-api-openapi.yml.
+conformance:
+  spec: A2A 1.0.0
+  grade: conformant
+  protocol_version: '0.3.0'
+  preferred_transport: JSONRPC
+  hard_checks:
+    capabilities_is_object: true
+    protocol_version_present: true
+    skills_is_array: true
+  optional_fields:
+    preferred_transport: true
+    default_input_modes: true
+    default_output_modes: true
+  grade_basis: >-
+    capabilities is an OBJECT with streaming, pushNotifications, stateTransitionHistory and an extensions[]
+    array; protocolVersion "0.3.0" is present at the top level; skills is an ARRAY of five fully-populated
+    skills. All three optional discriminators are present. The card passes every hard check, so it grades
+    conformant; the items below are recorded as deviations and drift, not as failures of the grade.
+  deviations:
+  - field: url / supportedInterfaces
+    observed: 'top-level url + preferredTransport (0.3.0 shape) AND a supportedInterfaces[] array whose entries use "transport" rather than the 1.0.0 "protocolBinding"'
+    note: A hybrid of the 0.3.0 and 1.0.0 shapes. A 0.3.0 reader ignores supportedInterfaces; a 1.0.0 reader finds the array but not the field name it expects. Harmless today, but neither reader sees a complete picture.
+  - field: security / securityRequirements
+    observed: both present with identical content, at card level and on every skill
+    note: securityRequirements is not an A2A field; it duplicates security. Readers should use security.
+  - field: url
+    observed: https://api.chainaware.ai/api/a2a returns HTTP 404 for POST; https://api.chainaware.ai/api/a2a/ (trailing slash) answers message/send
+    note: The declared endpoint is off by one character from the one that works. An A2A client that POSTs exactly what the card says will fail; one that normalises to a trailing slash will succeed.
+  - field: JSON-RPC methods
+    observed: message/send answers; tasks/get and agent/getAuthenticatedExtendedCard return HTTP 404 {"error":"Not found"} instead of JSON-RPC errors
+    note: Unimplemented methods should surface as JSON-RPC -32601 (or A2A -32001 for an unknown task). An HTTP 404 on a routed JSON-RPC endpoint is a transport-level answer to an application-level question.
+  - field: capabilities.extensions[0].required
+    observed: 'false'
+    note: Correct — x402 is one of two acceptable credentials (the other is x-api-key), so the extension is optional, unlike providers whose only gate is payment.
+  - field: skills[].metadata.inputSchema
+    observed: 'a flat property map ({field: {type, description, required, example}}) rather than a JSON Schema object'
+    note: Informative and matches /api/capabilities, but it is not a JSON Schema; the Enterprise Swagger's FraudCheckRequestBody etc. are the schema-grade definitions of the same inputs.
+  - field: signatures
+    observed: absent
+    note: No JWS signature block; the card's authenticity rests on TLS to api.chainaware.ai.
+  - field: llms.txt statement of location
+    observed: chainaware.ai/llms.txt says "A2A Agent Card at /.well-known/agent.json" on mcp.chainaware.ai, which 404s
+    note: Documentation drift; the card lives on api.chainaware.ai.
+surface_relationship:
+  note: >-
+    ChainAware publishes three agent-reachable surfaces that are projections of one model set. A2A: five skills
+    on api.chainaware.ai, each the x402/API-key edition of an Enterprise REST operation. MCP: fourteen tools on
+    prediction.mcp.chainaware.ai, of which four back onto the same REST operations and ten (batch jobs, token
+    rank, token audit, ERC-8004 agent trust) have no published REST contract at all. REST: five operations on
+    enterprise.api.chainaware.ai under x-api-key. The wallet_segment skill has an MCP twin only by semantics
+    (predictive_behaviour returns segmentation inside a larger profile). See mcp/chainaware-ai-tool-crosswalk.yml.

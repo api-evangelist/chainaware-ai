@@ -1,0 +1,79 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the ChainAware Enterprise API
+  version: 1.0.0
+  x-generated: '2026-09-19'
+  x-method: generated
+  x-source: https://chainaware.ai/learn/api/index.html
+  x-note: >-
+    Applies documentation-sourced facts to openapi/chainaware-ai-enterprise-api-openapi.yml without touching the
+    original: which subscription tier each operation needs, the per-operation network coverage table from the
+    docs, the x402 twin of each operation on api.chainaware.ai, the caching flag semantics, and the
+    network-identifier inconsistency an agent must handle. Nothing here changes a path, parameter or schema.
+extends: chainaware-ai-enterprise-api-openapi.yml
+actions:
+- target: $.info
+  update:
+    x-subscription-tiers:
+      Business: [checkWalletFraud, auditWalletBehaviour, checkRugPull]
+      Enterprise: [checkWalletFraud, auditWalletBehaviour, checkRugPull, getWalletSegment, getCreditScore]
+    x-key-issuance: https://chainaware.ai/profile
+    x-network-identifier-warning: >-
+      The Swagger enums (uppercase ETH/BNB/POLYGON/TON/BASE/TRON/HAQQ/SOLANA) are authoritative. The overview
+      page https://chainaware.ai/learn/api/index.html lists lowercase ids (ethereum, bsc, polygon, base,
+      solana, ton, tron) that contradict the contract and the per-endpoint pages.
+    x-caching: 'calculate=false (default) returns the cached score with lastChecked/checked_times; calculate=true forces a real-time recalculation (on /fraud/check and /fraud/audit).'
+    x-related-surfaces:
+      a2a_agent_card: https://api.chainaware.ai/.well-known/agent-card.json
+      x402_capabilities: https://api.chainaware.ai/api/capabilities
+      mcp_sse: https://prediction.mcp.chainaware.ai/sse
+- target: $.servers[0]
+  update:
+    x-anonymous-behaviour: 'HTTP 403 {"message":"Forbidden"} from AWS API Gateway; the documented 401 is only reachable with a malformed key, not a missing one.'
+- target: $.paths['/fraud/check'].post
+  update:
+    x-subscription: Business or Enterprise
+    x-networks: [Ethereum, BNB Smart Chain, Polygon, Base, Solana, TON, Tron]
+    x-x402-twin: {method: POST, url: 'https://api.chainaware.ai/api/fraud/check', price: '$0.15 USDC per call on Base'}
+    x-a2a-skill: fraud_check
+    x-mcp-tool: predictive_fraud
+    x-stated-latency: under 100ms
+    externalDocs: {url: 'https://chainaware.ai/learn/api/fraud-detection-api.html'}
+- target: $.paths['/fraud/audit'].post
+  update:
+    x-subscription: Business or Enterprise
+    x-networks: [Ethereum, BNB Smart Chain, Polygon, Base, Solana]
+    x-x402-twin: {method: POST, url: 'https://api.chainaware.ai/api/fraud/audit', price: '$0.15 USDC per call on Base'}
+    x-a2a-skill: fraud_audit
+    x-mcp-tool: predictive_behaviour
+    externalDocs: {url: 'https://chainaware.ai/learn/api/user-segmentation-api.html'}
+- target: $.paths['/rug/pull-check'].post
+  update:
+    x-subscription: Business or Enterprise
+    x-networks: [Ethereum, BNB Smart Chain, Polygon, Base, Solana, TON, Tron]
+    x-x402-twin: {method: POST, url: 'https://api.chainaware.ai/api/rug/pull-check', price: '$0.15 USDC per call on Base'}
+    x-a2a-skill: rug_pull
+    x-mcp-tool: predictive_rug_pull
+    x-stated-accuracy: '68% on new pools (docs); the website''s Rug Pull Detector V3 claims 90.1% — the API page still cites the V2 figure'
+    externalDocs: {url: 'https://chainaware.ai/learn/api/fraud-detection-api.html'}
+- target: $.paths['/segmentation/wallet-segment'].post
+  update:
+    x-subscription: Enterprise
+    x-networks: [Ethereum, BNB Smart Chain, Polygon]
+    x-x402-twin: {method: POST, url: 'https://api.chainaware.ai/api/segmentation/wallet-segment', price: '$0.15 USDC per call on Base'}
+    x-a2a-skill: wallet_segment
+    x-mcp-tool: null
+    externalDocs: {url: 'https://chainaware.ai/learn/api/user-segmentation-api.html'}
+- target: $.paths['/users/credit-score'].post
+  update:
+    x-subscription: Enterprise
+    x-networks: [Ethereum]
+    x-x402-twin: {method: POST, url: 'https://api.chainaware.ai/api/users/credit-score', price: '$0.15 USDC per call on Base'}
+    x-a2a-skill: credit_score
+    x-mcp-tool: credit_score
+    x-stated-latency: under 100ms
+    x-score-bands: {'8-9': 'High trust — eligible for undercollateralised or low-collateral loans', '6-7': 'Above average — reduced collateral', '4-5': 'Average — standard collateral', '2-3': 'Below average — full overcollateralisation', '1': 'Low trust — decline or maximum collateral'}
+    externalDocs: {url: 'https://chainaware.ai/learn/api/credit-scoring-api.html'}
+- target: $.paths.*.*.responses['429']
+  update:
+    x-rate-limit-note: 'Numbers, window and headers unpublished; tier-dependent per the provider. See rate-limits/chainaware-ai-rate-limits.yml.'

@@ -1,0 +1,111 @@
+{
+  "x402Version": 2,
+  "error": "Payment required",
+  "resource": {
+    "url": "http://api.chainaware.ai/fraud/check",
+    "description": "Calculate fraud probability of a given wallet address",
+    "mimeType": "application/json"
+  },
+  "accepts": [
+    {
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "amount": "150000",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payTo": "0x9e60Ca8606b39533B9E1bC460f6d0C92c16CeA08",
+      "maxTimeoutSeconds": 300,
+      "extra": {
+        "name": "USD Coin",
+        "version": "2"
+      }
+    }
+  ],
+  "extensions": {
+    "bazaar": {
+      "discoverable": false,
+      "inputSchema": {
+        "bodyParams": {
+          "network": {
+            "type": "string",
+            "description": "Blockchain network to query.",
+            "enum": [
+              "ETH",
+              "BNB",
+              "POLYGON",
+              "TON",
+              "BASE",
+              "TRON",
+              "HAQQ"
+            ],
+            "required": true,
+            "example": "ETH"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": " The wallet address to screen.",
+            "required": true,
+            "example": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+          },
+          "calculate": {
+            "type": "boolean",
+            "description": " Boolean indicating whether to perform a full realtime recalculation",
+            "required": false,
+            "example": false
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Result status message.",
+            "example": "Success"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": "Blockchain wallet address analyzed.",
+            "example": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+          },
+          "chain": {
+            "type": "string",
+            "description": "Blockchain network identifier.",
+            "example": "ETH"
+          },
+          "status": {
+            "type": "string",
+            "description": "Risk classification of the wallet.",
+            "enum": [
+              "Not Fraud",
+              "Fraud",
+              "New Address"
+            ],
+            "example": "Not Fraud"
+          }
+        }
+      },
+      "info": {
+        "input": {
+          "method": "POST"
+        }
+      },
+      "schema": {
+        "properties": {
+          "input": {
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "POST"
+                ]
+              }
+            },
+            "required": [
+              "method"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

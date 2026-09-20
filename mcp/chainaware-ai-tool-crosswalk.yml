@@ -1,0 +1,83 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  Derived by aligning the LIVE anonymous tools/list of https://prediction.mcp.chainaware.ai/sse (14 tools,
+  mcp/chainaware-ai-mcp-tools.json), the five A2A skills in a2a/chainaware-ai-agent-card.json and the five
+  operations in openapi/chainaware-ai-enterprise-api-openapi.yml (operationIds assigned by API Evangelist —
+  the provider publishes none). Bindings are by parameter shape and documented semantics; the provider's own
+  docs and README state the correspondence for the four bound tools.
+purpose: >-
+  Bind each agent-facing tool to the machine-readable REST operation that backs it, so an agent can take a real
+  request/response schema from the OpenAPI, and record the tools that have NO published REST contract — which
+  for ChainAware is most of the MCP surface.
+surfaces:
+  rest_openapi: openapi/chainaware-ai-enterprise-api-openapi.yml   # 5 ops on enterprise.api.chainaware.ai, x-api-key
+  rest_x402: https://api.chainaware.ai/api/*                        # same 5 paths under /api/, x402 or x-api-key; contract = a2a/chainaware-ai-api-capabilities.json (not OpenAPI)
+  a2a: https://api.chainaware.ai/api/a2a/                           # 5 skills; message/send answers anonymously
+  mcp: https://prediction.mcp.chainaware.ai/sse                     # 14 tools; tools/list NOT gated
+  graphql: null
+crosswalk:
+- tool: predictive_fraud
+  category: fraud
+  rest: [checkWalletFraud]
+  a2a_skill: fraud_check
+  binding: rest
+  confidence: high
+  note: Same inputs (network enum ETH/BNB/POLYGON/TON/BASE/TRON/HAQQ + walletAddress) and the same response fields (status, probabilityFraud, forensic_details, sanctionData). The MCP tool adds an in-band apiKey argument the REST operation takes as a header.
+- tool: predictive_behaviour
+  category: behaviour
+  rest: [auditWalletBehaviour]
+  a2a_skill: fraud_audit
+  binding: rest
+  confidence: high
+  note: POST /fraud/audit — full behavioural profile (experience, intention, categories, protocols, recommendation, riskProfile). Network set ETH/BNB/BASE/HAQQ/SOLANA on both surfaces.
+- tool: predictive_rug_pull
+  category: rug-pull
+  rest: [checkRugPull]
+  a2a_skill: rug_pull
+  binding: rest
+  confidence: high
+  note: POST /rug/pull-check. The MCP tool calls its input walletAddress although it is a contract or pool address; the REST body field is the same name.
+- tool: credit_score
+  category: credit
+  rest: [getCreditScore]
+  a2a_skill: credit_score
+  binding: rest
+  confidence: high
+  note: POST /users/credit-score — riskRating 1-9. ETH only on both surfaces.
+mcp_only:
+- {tool: predictive_fraud_batch, reason: 'Async batch pipeline (job_id + signature) exists only on the MCP server; no batch endpoint is published in the Enterprise Swagger or the x402 capabilities document.'}
+- {tool: predictive_behaviour_batch, reason: 'Same batch pipeline as predictive_fraud_batch; MCP only.'}
+- {tool: check_job_status, reason: 'Batch job control; MCP only.'}
+- {tool: get_job_results, reason: 'Batch job control; MCP only. Returns address lists, not wallet data — the docs say to query "the main backend" for the analysis, which is the REST/MCP single-wallet tools.'}
+- {tool: token_rank_list, reason: 'Token Rank product; served to the web app and MCP, no REST contract published. The growth-tech docs mention a GET /v1/behaviour/{wallet_address} route for analytics customers that appears in no published spec either.'}
+- {tool: token_rank_single, reason: 'Token Rank product; MCP only.'}
+- {tool: run_token_audit, reason: 'Token Audit product (11-module contract audit); MCP only. Note the lowercase network ids (eth, bsc, …) versus uppercase everywhere else.'}
+- {tool: get_token_audit_result, reason: 'Token Audit polling; MCP only.'}
+- {tool: agents_trust_score_list, reason: 'ERC-8004 Agent Trust Score product; MCP only. Inputs page/limit/sort_by/sort_order/registered_after all optional with defaults.'}
+- {tool: agents_trust_score_single, reason: 'ERC-8004 Agent Trust Score by agent_id + chain_id; MCP only.'}
+rest_only:
+- operation: getWalletSegment
+  path: POST /segmentation/wallet-segment
+  a2a_skill: wallet_segment
+  note: >-
+    No MCP tool exposes the wallet-segment quality score directly; the A2A skill wallet_segment and the x402
+    capability "Wallet Segmentation" do. predictive_behaviour returns segmentation fields inside its larger
+    profile, so an MCP agent can approximate it, but the dedicated operation is REST/A2A only.
+a2a_crosswalk:
+  note: Every A2A skill maps 1:1 to a REST operation; the A2A surface is a strict subset of REST, re-hosted on api.chainaware.ai/api/ with x402 as an alternative credential.
+  skills:
+  - {skill: fraud_check, rest: checkWalletFraud, x402_endpoint: 'POST https://api.chainaware.ai/api/fraud/check'}
+  - {skill: fraud_audit, rest: auditWalletBehaviour, x402_endpoint: 'POST https://api.chainaware.ai/api/fraud/audit'}
+  - {skill: wallet_segment, rest: getWalletSegment, x402_endpoint: 'POST https://api.chainaware.ai/api/segmentation/wallet-segment'}
+  - {skill: rug_pull, rest: checkRugPull, x402_endpoint: 'POST https://api.chainaware.ai/api/rug/pull-check'}
+  - {skill: credit_score, rest: getCreditScore, x402_endpoint: 'POST https://api.chainaware.ai/api/users/credit-score'}
+coverage:
+  mcp_tools_named: 14
+  mcp_tools_bound_to_rest: 4
+  mcp_only: 10
+  rest_operations_total: 5
+  rest_operations_with_mcp_tool: 4
+  rest_operations_with_a2a_skill: 5
+  a2a_skills: 5
+  a2a_skills_bound_to_rest: 5

@@ -1,23 +1,238 @@
 aid: chainaware-ai
 name: ChainAware.ai
-description: 'ChainAware.ai is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  ChainAware.ai is an AI-powered blockchain intelligence platform, operated by Decentral Tech OÜ (Estonia)
+  with algorithms from the SmartCredit.io team, that scores wallets, tokens, smart contracts and ERC-8004 AI
+  agents for fraud, rug-pull, credit and trust risk across eight blockchains (Ethereum, BNB Smart Chain,
+  Polygon, Base, Solana, TON, Tron, HAQQ) using 23M+ behavioural wallet profiles. The same models are exposed
+  three ways: a five-operation Enterprise REST API at enterprise.api.chainaware.ai (Swagger 2.0 published at
+  swagger.chainaware.ai, x-api-key auth, Business/Enterprise subscriptions); a hosted MCP server at
+  prediction.mcp.chainaware.ai/sse (14 tools, anonymous tools/list, MIT-licensed source, listed in the official
+  MCP registry); and an A2A 0.3.0 agent card at api.chainaware.ai/.well-known/agent-card.json whose five skills
+  are paid per call through x402 (USDC on Base, $0.15 per call) or with an API key.
+image: https://chainaware.ai/assets/brand/chainawareai-logo.svg
 url: https://raw.githubusercontent.com/api-evangelist/chainaware-ai/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-09-19 (local-v3; was a2a-registry harvest stub)
+x-operator: Decentral Tech OÜ, reg. Nr. 14907413, Estonia (per https://chainaware.ai/terms/); IP held by Decentral Prediction Ltd. (BVI)
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
-- Company
-apis: []
+- Blockchain
+- Web3
+- DeFi
+- Fraud Detection
+- AML
+- Compliance
+- Credit Scoring
+- Risk Scoring
+- Smart Contract Security
+- Agent Trust
+- MCP
+- A2A
+- x402
+- Agents
+- agent-native
+- Estonia
+tags_raw:
+- Blockchain
+- Web3
+- DeFi
+- Fraud detection
+- AML
+- Compliance
+- Credit scoring
+- Risk scoring
+- Smart contract security
+- Agent trust
+- MCP
+- A2A
+- x402
+- Agents
+- Agent-native
+- Estonia
+apis:
+- aid: chainaware-ai:chainaware-enterprise-api
+  name: ChainAware Enterprise API
+  description: >-
+    REST API for DeFi protocols and Web3 businesses: fraud probability for a wallet (POST /fraud/check), a full
+    behavioural wallet profile with intent prediction (POST /fraud/audit), rug-pull probability for a contract
+    or pool (POST /rug/pull-check), wallet behaviour segment and quality score (POST /segmentation/wallet-segment)
+    and a 1-9 on-chain credit score (POST /users/credit-score). Five POST operations on
+    https://enterprise.api.chainaware.ai, x-api-key header auth, published as Swagger 2.0 at
+    https://swagger.chainaware.ai/swagger.json; the fraud endpoints need a Business or Enterprise subscription,
+    segmentation and credit score need Enterprise. Anonymous requests get HTTP 403 from the API Gateway edge.
+  humanURL: https://chainaware.ai/learn/api/index.html
+  baseURL: https://enterprise.api.chainaware.ai
+  tags:
+  - Fraud Detection
+  - Credit Scoring
+  - Risk Scoring
+  - DeFi
+  - Blockchain
+  properties:
+  - type: OpenAPI
+    url: openapi/chainaware-ai-enterprise-api-openapi.yml
+  - type: OpenAPI
+    name: ChainAware Enterprise API Swagger 2.0 (provider-hosted)
+    url: https://swagger.chainaware.ai/swagger.json
+  - type: Documentation
+    url: https://chainaware.ai/learn/api/index.html
+  - type: APIReference
+    url: https://swagger.chainaware.ai/
+  - type: Overlay
+    url: overlays/chainaware-ai-enterprise-api-overlay.yaml
+- aid: chainaware-ai:chainaware-prediction-mcp-server
+  name: ChainAware Behavioural Prediction MCP Server
+  description: >-
+    Hosted Model Context Protocol server over Server-Sent Events at https://prediction.mcp.chainaware.ai/sse
+    (https://mcp.chainaware.ai/sse serves the same server; messages are POSTed to /messages/?session_id=...).
+    initialize and tools/list answer anonymously — serverInfo ChainAwareMCP 1.11.0, protocol 2025-03-26 — with
+    14 tools carrying real inputSchemas: predictive_fraud, predictive_behaviour, predictive_rug_pull,
+    credit_score (and their batch variants plus check_job_status / get_job_results), token_rank_list,
+    token_rank_single, run_token_audit, get_token_audit_result, agents_trust_score_list and
+    agents_trust_score_single. Six tools take the API key as an in-band apiKey argument (or X-API-Key header);
+    eight need no key. Source is MIT-licensed on GitHub and the server is listed in the official MCP registry as
+    io.github.ChainAware/chainaware-behavioral-prediction-mcp.
+  humanURL: https://chainaware.ai/learn/prediction-mcp/index.html
+  baseURL: https://prediction.mcp.chainaware.ai/sse
+  tags:
+  - MCP
+  - agent-native
+  - Agents
+  - Fraud Detection
+  - Agent Trust
+  properties:
+  - type: MCPServer
+    url: mcp/chainaware-ai-mcp.yml
+  - type: MCPServer
+    name: ChainAware MCP SSE endpoint (provider-hosted)
+    url: https://prediction.mcp.chainaware.ai/sse
+  - type: ToolCrosswalk
+    url: mcp/chainaware-ai-tool-crosswalk.yml
+  - type: Documentation
+    url: https://chainaware.ai/learn/prediction-mcp/index.html
+  - type: GettingStarted
+    url: https://chainaware.ai/learn/prediction-mcp/setup.html
+  - type: SourceCode
+    url: https://github.com/ChainAware/behavioral-prediction-mcp
+  - type: CodeSamples
+    url: https://github.com/ChainAware/examples
+- aid: chainaware-ai:chainaware-a2a-x402-agent-api
+  name: ChainAware A2A Agent and x402 API
+  description: >-
+    Agent-facing surface on api.chainaware.ai: an A2A 0.3.0 agent card at /.well-known/agent-card.json (also at
+    the legacy /.well-known/agent.json) declaring five skills — fraud_check, fraud_audit, wallet_segment,
+    rug_pull, credit_score — each bound to a POST endpoint under https://api.chainaware.ai/api/ and paid either
+    with an x-api-key or per call through the x402 extension (USDC on Base, eip155:8453, $0.15 per call). The
+    JSON-RPC endpoint answers message/send at /api/a2a/ (the card's declared /api/a2a without the trailing slash
+    404s, as do tasks/get and agent/getAuthenticatedExtendedCard). An unauthenticated POST to
+    /api/fraud/check returns a live HTTP 402 with an x402 v2 PaymentRequirements header, and
+    /api/capabilities publishes a machine-readable capabilities document with per-call pricing.
+  humanURL: https://chainaware.ai/x402-payment
+  baseURL: https://api.chainaware.ai/api
+  tags:
+  - A2A
+  - x402
+  - agent-native
+  - Agents
+  - Fraud Detection
+  properties:
+  - type: AgentCard
+    url: a2a/chainaware-ai-a2a.yml
+  - type: AgentCard
+    name: A2A Agent Card (provider-hosted)
+    url: https://api.chainaware.ai/.well-known/agent-card.json
+  - type: Documentation
+    name: x402 capabilities document (machine-readable, provider-hosted)
+    url: https://api.chainaware.ai/api/capabilities
+  - type: Documentation
+    url: https://swagger.chainaware.ai/
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/chainaware-ai-domain-security.yml
+- type: AgenticAccess
+  url: agentic-access/chainaware-ai-agentic-access.yml
+- type: Authentication
+  url: authentication/chainaware-ai-authentication.yml
 - type: Website
   url: https://chainaware.ai/
+- type: DeveloperPortal
+  url: https://chainaware.ai/learn/
+- type: Documentation
+  url: https://chainaware.ai/learn/
+- type: APIReference
+  url: https://swagger.chainaware.ai/
+- type: GettingStarted
+  url: https://chainaware.ai/learn/prediction-mcp/setup.html
+- type: Support
+  url: https://chainaware.ai/support
+- type: Blog
+  url: https://chainaware.ai/blog/
+- type: GitHub
+  url: https://github.com/ChainAware
+- type: Pricing
+  url: https://chainaware.ai/pricing
+- type: SignUp
+  url: https://chainaware.ai/profile
+- type: TermsOfService
+  url: https://chainaware.ai/terms/
+- type: PrivacyPolicy
+  url: https://chainaware.ai/privacy/
+- type: Twitter
+  url: https://x.com/ChainAware
+- type: LinkedIn
+  url: https://www.linkedin.com/company/chainaware
+- type: YouTube
+  url: https://www.youtube.com/@ChainAware
+- type: Community
+  url: https://t.me/ChainAware_ai
+- type: LLMsTxt
+  url: llms/chainaware-ai-llms.txt
+- type: LLMsTxt
+  name: llms.txt (provider-hosted)
+  url: https://chainaware.ai/llms.txt
+- type: LLMsTxt
+  name: Docs llms.txt (provider-hosted)
+  url: https://chainaware.ai/learn/llms.txt
+- type: AgentCard
+  url: a2a/chainaware-ai-a2a.yml
+- type: MCPServer
+  url: mcp/chainaware-ai-mcp.yml
+- type: WellKnown
+  url: well-known/chainaware-ai-well-known.yml
+- type: Conventions
+  url: conventions/chainaware-ai-conventions.yml
+- type: ErrorCatalog
+  url: errors/chainaware-ai-problem-types.yml
+- type: DataModel
+  url: data-model/chainaware-ai-data-model.yml
+- type: RateLimits
+  url: rate-limits/chainaware-ai-rate-limits.yml
+- type: Plans
+  url: plans/chainaware-ai-plans-pricing.yml
+- type: Conformance
+  url: conformance/chainaware-ai-conformance.yml
+- type: Lifecycle
+  url: lifecycle/chainaware-ai-lifecycle.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Components
+  url: components/chainaware-ai-components.yml
+- type: DataSubjectRequest
+  url: https://chainaware.ai/privacy/
+- type: AITransparency
+  url: https://chainaware.ai/terms/
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 34
+  pass: local-v3

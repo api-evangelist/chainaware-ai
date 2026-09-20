@@ -1,0 +1,60 @@
+generated: '2026-09-19'
+method: searched
+source: https://chainaware.ai/learn/api/index.html
+docs:
+- https://chainaware.ai/pricing
+- https://api.chainaware.ai/api/capabilities
+- https://chainaware.ai/learn/prediction-mcp/index.html
+- https://github.com/ChainAware/behavioral-prediction-mcp
+plan_count: 4
+currency: USD / USDC
+model: 'free individual tools and free MCP discovery; x402 pay-per-call in USDC on Base for the agent API; Business and Enterprise API subscriptions whose prices are on a JS-rendered pricing page this pass could not read'
+summary: >-
+  ChainAware publishes its tier STRUCTURE in the docs and its per-call price in two machine-readable places,
+  but not its subscription prices. The Enterprise API docs define two subscriptions — Business (the three
+  fraud endpoints) and Enterprise (all five) — with keys issued at chainaware.ai/profile and "custom volume
+  pricing" by contact. The x402 price is published verbatim in the agent card (pricePerCall $0.15), in
+  /api/capabilities (perCall $0.15 USDC on eip155:8453 for all five capabilities) and on the wire (amount
+  150000 = 0.15 USDC in the live 402 challenge). https://chainaware.ai/pricing is an Angular route that
+  serves the 7,355-byte SPA shell to a crawler, so the Business/Enterprise prices are recorded as null rather
+  than guessed.
+plans:
+- id: free
+  name: Free individual tools and MCP discovery
+  price: 0
+  currency: USD
+  period: null
+  included: 'Wallet Auditor, Fraud Detector, Rug Pull Detector, Token Audit, Token Rank and Agent Trust Score on chainaware.ai — "free, no signup required"; MCP initialize/tools/list and the eight no-key tools (token rank, token audit, agent trust, batch status/results); the docs say the Prediction MCP is "free to test, no signup required"'
+  limits: ['no API key — the six key-gated MCP tools and every Enterprise REST operation need a subscription or x402 payment']
+  source: https://chainaware.ai/learn/prediction-mcp/index.html
+- id: x402-pay-per-call
+  name: x402 pay-per-call
+  price: 0.15
+  currency: USDC
+  period: per call
+  network: 'Base (eip155:8453); asset 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913 (USDC); payTo 0x9e60Ca8606b39533B9E1bC460f6d0C92c16CeA08; scheme exact; maxTimeoutSeconds 300'
+  included: 'Fraud Check, Wallet Audit, Wallet Segmentation, Rug Pull Check, Credit Score at https://api.chainaware.ai/api/* — the same five operations as the Enterprise API; also usable from the MCP tools by omitting apiKey (README) and from the A2A skills'
+  limits: ['no account; per-call settlement; not refundable via the API']
+  source: https://api.chainaware.ai/api/capabilities
+  evidence: a2a/chainaware-ai-x402-payment-required.json
+- id: business
+  name: Business subscription
+  price: null
+  currency: USD
+  period: null
+  included: 'All Fraud API endpoints: POST /fraud/check, POST /fraud/audit, POST /rug/pull-check; API key via chainaware.ai/profile; MCP key-gated tools'
+  limits: ['/segmentation/wallet-segment and /users/credit-score excluded', 'rate limit numbers unpublished (429 declared)']
+  source: https://chainaware.ai/learn/api/index.html
+  note: Price not machine-readable — https://chainaware.ai/pricing is a client-rendered SPA route (200, SPA shell).
+- id: enterprise
+  name: Enterprise subscription
+  price: null
+  currency: USD
+  period: null
+  included: 'Full API access: all Fraud API endpoints plus POST /segmentation/wallet-segment and POST /users/credit-score; "enterprise onboarding or custom volume pricing" by contact'
+  limits: ['rate limit numbers unpublished (429 declared)']
+  source: https://chainaware.ai/learn/api/index.html
+  note: Price not machine-readable — same pricing-page limitation; enterprise volume pricing is "contact us".
+probes:
+- {url: 'https://chainaware.ai/pricing', status: 200, bytes: 7355, note: SPA shell — human-readable only after JavaScript executes}
+- {url: 'https://api.chainaware.ai/api/capabilities', status: 200, note: machine-readable per-call pricing}

@@ -1,0 +1,102 @@
+generated: '2026-09-19'
+method: searched
+source: https://chainaware.ai/learn/api/index.html
+derived_from: openapi/chainaware-ai-enterprise-api-openapi.yml
+docs:
+- https://chainaware.ai/learn/api/fraud-detection-api.html
+- https://chainaware.ai/learn/api/user-segmentation-api.html
+- https://chainaware.ai/learn/api/credit-scoring-api.html
+- https://chainaware.ai/learn/prediction-mcp/setup.html
+- https://github.com/ChainAware/behavioral-prediction-mcp
+description: >-
+  Cross-cutting semantics of ChainAware's three surfaces. The REST Enterprise API is five POST operations that
+  are all reads in effect (each computes or returns a cached score for an address); the MCP server adds
+  asynchronous batch jobs and audit queueing; the A2A/x402 surface re-hosts the five REST operations behind a
+  per-call payment. Nothing here mutates customer state, which is why idempotency and reversibility come out
+  the way they do below.
+base_url: https://enterprise.api.chainaware.ai
+api_style: REST over HTTPS; every operation is POST with a JSON body (Content-Type application/json) even though every one is a query; JSON responses
+authentication:
+  scheme: API key in the x-api-key request header (REST, A2A); X-API-Key header, ?apiKey= query or in-band apiKey tool argument (MCP); X-PAYMENT header carrying an x402 payment (A2A / api.chainaware.ai)
+  key_issuance: https://chainaware.ai/profile (Business or Enterprise subscription); no test/live key prefixes are documented
+  detail: authentication/chainaware-ai-authentication.yml
+  docs: https://chainaware.ai/learn/api/index.html
+  note: >-
+    The MCP server takes the API key INSIDE the tool arguments for six tools (apiKey is a required inputSchema
+    property), which puts a credential in the model-visible payload; the provider's SKILL.md instructs agents
+    to source it from CHAINAWARE_API_KEY and never log it. Anonymous access is possible on every surface for
+    discovery (tools/list, agent card, capabilities document) and on the MCP server for eight tools.
+idempotency:
+  supported: false
+  coverage: none
+  scope: []
+  mechanism: null
+  applies_to: >-
+    Not applicable to the REST Enterprise API and the A2A skills, whose five POST operations compute and
+    return a score without creating anything (safe to repeat; a repeat may cost a second x402 payment). The
+    only side-effecting calls are on the MCP server — predictive_fraud_batch / predictive_behaviour_batch
+    (create a job) and run_token_audit (may queue an audit) — and none of them accepts an idempotency key, so
+    a retried batch submission creates a second job.
+  natural_idempotency: run_token_audit is documented as get-or-create (a cached audit is returned rather than re-queued), which is a de-facto dedupe on (contract_address, network) but not a client-controlled key.
+  retention: null
+  docs: null
+  note: >-
+    coverage is `none` rather than `na` because the MCP batch/audit operations are real writes (a job is
+    created and billed) with no replay protection. An agent that re-submits a batch after a timeout pays for
+    it twice. No Idempotency pointer is emitted.
+dry_run_mode:
+  supported: false
+  note: >-
+    No sandbox, test mode or dry-run flag. The nearest thing is that eight MCP tools and the website tools are
+    free to call without a key, and the `calculate: false` default returns a cached score (see caching) rather
+    than triggering a fresh computation.
+reversibility:
+  grade: na
+  note: >-
+    There is nothing to reverse: no operation on any surface creates, modifies or deletes a customer resource,
+    moves funds or sends a message on the caller's behalf. Batch jobs cannot be cancelled (no cancel tool is
+    published) but they produce read-only results. x402 payments are on-chain USDC transfers and are not
+    refundable through the API; no refund window is stated anywhere and none is asserted here.
+  write_surfaces: []
+caching:
+  mechanism: 'Request body flag `calculate` (boolean, default false) on /fraud/check and /fraud/audit'
+  semantics: 'false (default) returns the most recent cached score with lastChecked / checked_times telling the caller how fresh it is; true forces a full real-time recalculation.'
+  docs: https://chainaware.ai/learn/api/fraud-detection-api.html
+pagination:
+  rest: none — every REST operation returns a single object
+  mcp:
+    token_rank_list: 'limit + offset (both required strings), sort_by, sort_order, category filter, contract_name search'
+    agents_trust_score_list: 'page (default 1) + limit (default 5), sort_by (default registered_at), sort_order (default desc), registered_after (default 2025-01-01)'
+  note: Two different pagination styles (offset vs page) inside one MCP server.
+async_pattern:
+  batch_jobs: >-
+    predictive_*_batch returns {job_id, signature, total_items, chunks_enqueued, status: pending} immediately;
+    poll check_job_status (counts only) until completed or partial; then get_job_results returns the address
+    list, and the caller fetches per-wallet data with the single-wallet tools. job_id AND signature are both
+    required for every follow-up and cannot be recovered if lost. Up to 1,000 wallets per job.
+  token_audit: run_token_audit is get-or-create; when it returns status queued, poll get_token_audit_result with the same contract_address + network until audit_status == complete.
+  webhooks: none — polling only
+field_expansion: {supported: false}
+sparse_fields: {supported: false}
+metadata: {supported: false}
+request_tracing:
+  request_id_header: null
+  observed: 'x-amzn-requestid and x-amzn-apigw-id on enterprise.api.chainaware.ai responses (AWS API Gateway), x-amz-cf-id on every host (CloudFront) — infrastructure ids, not a documented correlation header'
+versioning:
+  scheme: none (unversioned paths)
+  detail: lifecycle/chainaware-ai-lifecycle.yml
+network_identifiers:
+  note: >-
+    A real inconsistency an agent must handle: the Swagger enum, the per-endpoint docs and the MCP tools use
+    uppercase ETH / BNB / POLYGON / TON / BASE / TRON / HAQQ / SOLANA; the Enterprise API overview page says
+    to use lowercase ethereum / bsc / polygon / base / solana / ton / tron; the token-audit tools use lowercase
+    eth / bsc / base / arbitrum / avalanche / optimism / polygon; agents_trust_score_single takes a numeric
+    chain_id (1, 56, …). The contract (Swagger enum) is authoritative for REST.
+error_envelope:
+  media_type: application/json
+  success_shape: '{"message": "Success", ...}'
+  error_shape: 'undocumented for REST (no 4xx schema); {"error": "..."} observed on api.chainaware.ai; {} + payment-required header on 402'
+  detail: errors/chainaware-ai-problem-types.yml
+rate_limits:
+  signaling: HTTP 429 "Rate limit exceeded" declared on every operation; no headers, numbers or windows published
+  detail: rate-limits/chainaware-ai-rate-limits.yml

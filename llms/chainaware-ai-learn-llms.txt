@@ -1,0 +1,68 @@
+# ChainAware Docs
+
+> ChainAware.ai provides AI-powered blockchain intelligence for DeFi protocols and AI agents - predictive fraud detection, rug pull screening, wallet behavioral profiling, credit scoring, token auditing, and ERC-8004 AI agent trust scoring across 8 blockchains and 23M+ wallet profiles.
+
+ChainAware exposes its platform via an open-source Model Context Protocol (MCP) server (14 tools), 34 pre-built Claude Code subagents, and a REST API. Its products are used for real-time fraud prevention, AML and MiCA compliance screening, undercollateralised DeFi lending, wallet-level personalization, token due diligence, and AI agent trust verification in agentic commerce.
+
+Key stats: 23M+ wallet profiles - 8 blockchains - 98% fraud detection accuracy - <100ms API latency - 377,608 ERC-8004 AI agents indexed.
+
+## Products
+
+- [Prediction MCP](https://chainaware.ai/learn/prediction-mcp/index.html): Open-source MCP server with 14 prediction tools for fraud detection, behavioral profiling, rug pull screening, credit scoring, token ranking, token auditing, and ERC-8004 agent trust scoring. Free to test, no signup required.
+- [Ready-made Agents](https://chainaware.ai/learn/ready-made-agents/index.html): 34 pre-built Claude Code subagents covering security and fraud, risk, growth and marketing, token intelligence, GameFi, DAO governance, and AI agent trust screening.
+- [Agent Trust Score](https://chainaware.ai/learn/agent-trust-score.html): 0-1000 behavioral trust scoring for ERC-8004 AI agents. Traces agent ownership to the feeder wallet, cross-references rug pull and honeypot history, and runs a predictive fraud model. 377,608 agents indexed; average score 420.
+- [Token Audit](https://chainaware.ai/learn/token-audit/index.html): 11-module smart contract analysis detecting honeypots, rug mechanics, theft vectors, and liquidity risks. 129 individual findings. 0-100 risk score with 6 verdict levels. 7 chains supported.
+- [Token Rank](https://chainaware.ai/learn/token-rank/index.html): Holder-quality scoring for token contracts. Detects long rug pulls and manufactured communities by analyzing the behavioral profiles of token holders rather than price or volume.
+- [MiCA Compliance for DeFi](https://chainaware.ai/learn/compliance-for-defi/index.html): AML screening, transaction monitoring, and credit scoring aligned to MiCA obligations. Autonomous compliance with no manual review required.
+- [Growth Tech for DeFi](https://chainaware.ai/learn/growth-tech/index.html): Growth agents, Web3 analytics, and wallet-level 1:1 targeting. Converts connecting wallets into transacting users.
+- [Enterprise API](https://chainaware.ai/learn/api/index.html): REST API for fraud detection, credit scoring, and user segmentation. Full Swagger spec available.
+
+## MCP Tools
+
+- [predictive_fraud](https://chainaware.ai/learn/prediction-mcp/tool-predictive-fraud.html): Fraud probability (0-1) and AML forensics for a wallet address. Networks: ETH, BNB, POLYGON, TON, BASE, TRON, HAQQ.
+- [predictive_fraud_batch](https://chainaware.ai/learn/prediction-mcp/tool-predictive-fraud-batch.html): Batch fraud detection for a list of wallets. Returns job_id immediately; poll for results.
+- [predictive_behaviour](https://chainaware.ai/learn/prediction-mcp/tool-predictive-behaviour.html): Wallet segmentation, intent prediction, experience scoring, and personalization recommendations. Networks: ETH, BNB, BASE, HAQQ, SOLANA.
+- [predictive_behaviour_batch](https://chainaware.ai/learn/prediction-mcp/tool-predictive-behaviour-batch.html): Batch behavioral profiling. Returns job_id immediately; poll for results.
+- [predictive_rug_pull](https://chainaware.ai/learn/prediction-mcp/tool-predictive-rug-pull.html): Rug pull risk score for smart contracts and liquidity pools. Networks: ETH, BNB, BASE, HAQQ.
+- [credit_score](https://chainaware.ai/learn/prediction-mcp/tool-credit-score.html): AI-driven crypto trust score (1-9) combining behavioral analysis, fraud scoring, and social graph signals. Network: ETH.
+- [run_token_audit](https://chainaware.ai/learn/prediction-mcp/tool-run-token-audit.html): Deep smart contract audit across 11 modules. Networks: ETH, BNB, BASE, Arbitrum, Avalanche, Optimism, Polygon.
+- [get_token_audit_result](https://chainaware.ai/learn/prediction-mcp/tool-get-token-audit-result.html): Retrieve token audit results. Poll this when run_token_audit returns status queued.
+- [token_rank_list](https://chainaware.ai/learn/prediction-mcp/tool-token-rank-list.html): Ranked list of tokens by holder community strength. Networks: ETH, BNB, BASE, SOLANA.
+- [token_rank_single](https://chainaware.ai/learn/prediction-mcp/tool-token-rank-single.html): Community rank and top holder wallet intelligence for a specific token contract.
+- [agents_trust_score_list](https://chainaware.ai/learn/prediction-mcp/tool-agents-trust-score-list.html): Paginated list of ERC-8004 AI agents with 0-1000 trust scores. Networks: ETH, BNB, Base, AVAX, Mantle.
+- [agents_trust_score_single](https://chainaware.ai/learn/prediction-mcp/tool-agents-trust-score-single.html): Full trust profile for a single ERC-8004 registered AI agent.
+- [check_job_status](https://chainaware.ai/learn/prediction-mcp/tool-check-job-status.html): Check progress of a batch job.
+- [get_job_results](https://chainaware.ai/learn/prediction-mcp/tool-get-job-results.html): Retrieve results of a completed batch job.
+
+## Use Cases
+
+- [AML and KYC Compliance](https://chainaware.ai/learn/use-cases/aml-kyc-compliance.html): AML screening, MiCA obligations, transaction monitoring, and fraud screening for DeFi protocols.
+- [Agentic User Onboarding](https://chainaware.ai/learn/use-cases/agentic-onboarding-personalisation.html): Route users from wallet connect without human review, using behavioral signals.
+- [DeFi Credit Scoring](https://chainaware.ai/learn/use-cases/defi-credit-scoring.html): Undercollateralised lending enabled by AI credit scoring (1-9 trust score).
+- [Rug Pull Prevention](https://chainaware.ai/learn/use-cases/rug-pull-prevention.html): 68% detection accuracy before pool collapse. Screen tokens and contracts before listing.
+- [Sybil-Resistant Token Distribution](https://chainaware.ai/learn/use-cases/sybil-resistant-token-distribution.html): Keep bots and farm wallets out of airdrops and IDOs using behavioral screening.
+- [AI Agent Trust Verification](https://chainaware.ai/learn/use-cases/ai-agent-trust-verification.html): Screen agent wallets, feeder addresses, and autonomous pipelines before interaction.
+- [Token and Community Intelligence](https://chainaware.ai/learn/use-cases/token-community-intelligence.html): Evaluate tokens by holder quality and behavioral signals, not price or volume.
+- [Autonomous Compliance Screening](https://chainaware.ai/learn/use-cases/autonomous-compliance-screening.html): MiCA-aligned AML screening with no manual review required.
+
+## Comparisons
+
+- [ChainAware vs Chainalysis](https://chainaware.ai/learn/comparisons/chainaware-vs-chainalysis.html): Predictive AI vs forensic blockchain analytics. ChainAware predicts future behavior; Chainalysis traces past transactions.
+- [ChainAware vs TRM Labs](https://chainaware.ai/learn/comparisons/chainaware-vs-trm-labs.html): Wallet behavioral intelligence vs transaction monitoring and compliance.
+- [ChainAware vs Elliptic](https://chainaware.ai/learn/comparisons/chainaware-vs-elliptic.html): Predictive scoring vs compliance-focused blockchain analytics.
+- [Agent Trust Platforms](https://chainaware.ai/learn/comparisons/agent-trust-platforms.html): ChainAware vs RNWY, SkyeProfile, AXIS T-Score, DJD Agent Score - feature comparison.
+- [DeFi Credit Score Platforms](https://chainaware.ai/learn/comparisons/defi-credit-score-platforms.html): Comparison of on-chain credit scoring approaches for undercollateralised lending.
+
+## For Individuals
+
+- [Fraud Detector](https://chainaware.ai/learn/for-individuals/fraud-detector.html): Check any crypto wallet address for fraud risk. Free, no signup.
+- [Rug Pull Detector](https://chainaware.ai/learn/for-individuals/rug-pull-detector.html): Check any token contract for rug pull risk before buying.
+- [Wallet Auditor](https://chainaware.ai/learn/for-individuals/wallet-auditor.html): Full behavioral audit of any wallet address.
+- [Token Audit](https://chainaware.ai/learn/for-individuals/token-audit.html): Free smart contract audit - 11 modules, instant verdict.
+- [Token Rank](https://chainaware.ai/learn/for-individuals/token-rank.html): See how a token ranks by holder community quality.
+
+## About
+
+- [About ChainAware](https://chainaware.ai/learn/about-us/index.html): Company overview, products, and mission. Algorithms developed by the SmartCredit.io team.
+- [Contact](https://chainaware.ai/learn/about-us/contact-us.html): Support at chainaware.ai/support. Community on Telegram at t.me/ChainAware_ai.
+- [API Access](https://chainaware.ai/support): Get an API key for production use of the Prediction MCP and Enterprise API.
