@@ -1,0 +1,529 @@
+openapi: 3.2.0
+info:
+  title: ChainAware Enterprise Fraud API
+  version: 1.0.2
+  description: AI-powered fraud detection, wallet auditing, rug pull screening, user segmentation, and credit scoring for DeFi protocols.
+servers:
+- url: https://enterprise.api.chainaware.ai/
+security:
+- ApiKeyAuth: []
+tags:
+- name: Fraud API
+paths:
+  /fraud/check:
+    post:
+      summary: Calculate fraud probability of a wallet address
+      description: 'Returns a fraud probability score for a given wallet address. Use this endpoint for real-time risk gating — for example, at wallet-connect to decide whether to allow or flag a user before they interact with your protocol.
+
+
+        **Response latency:** under 100ms.
+
+
+        **Subscription:** Business or Enterprise.
+
+
+        **Further reading:** Fraud Detector Guide'
+      tags:
+      - Fraud API
+      responses:
+        '200':
+          description: Fraud check result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FraudCheckResponse'
+        '400':
+          description: Bad request — missing or invalid fields in the request body
+        '401':
+          description: Unauthorised — API key missing or invalid
+        '404':
+          description: Wallet not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FraudCheckRequestBody'
+        required: true
+      operationId: postFraudCheck
+      x-operation-id-source: derived
+  /rug/pull-check:
+    post:
+      summary: Calculate rug pull probability of a contract address
+      description: 'Returns a rug pull probability score for a given contract address. Evaluates the contract itself, the deployer''s cross-chain behavioural history, and the behaviour of associated liquidity providers.
+
+
+        Use this endpoint to screen liquidity pools, token contracts, or DeFi protocol contracts before your users interact with them — or to power a rug pull alert feature in your product.
+
+
+        ChainAware''s rug pull model achieves **90% accuracy on new pools**, detecting preparation patterns before a documented rug event occurs.
+
+
+        **Subscription:** Business or Enterprise.
+
+
+        **Supported networks:** `ETH`, `BNB`, `BASE`, `HAQQ`.
+
+
+        **Further reading:** Rug Pull Detector Guide'
+      tags:
+      - Fraud API
+      responses:
+        '200':
+          description: Rug pull check result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RugPullResponse'
+        '400':
+          description: Bad request — missing or invalid fields in the request body
+        '401':
+          description: Unauthorised — API key missing or invalid
+        '404':
+          description: Contract not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RugPullRequestBody'
+        required: true
+      operationId: postRugPullCheck
+      x-operation-id-source: derived
+components:
+  schemas:
+    RugPullRequestBody:
+      type: object
+      required:
+      - network
+      - walletAddress
+      properties:
+        network:
+          type: string
+          description: Blockchain network to query.
+          enum:
+          - ETH
+          - BNB
+          - BASE
+          - HAQQ
+          example: ETH
+        walletAddress:
+          type: string
+          description: The smart contract or liquidity pool address to screen. To check a wallet address instead, use `/fraud/check`.
+          example: 0xContractAddressHere
+    RugPullResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Result status message.
+          example: Success
+        contractAddress:
+          type: string
+          description: Smart contract address analyzed.
+          example: '0x91dba2cd05c8a0227b48c3e426077145d23b21df'
+        pairAddress:
+          type: string
+          description: Liquidity pair address on decentralized exchange.
+          example: '0x290dd1e2e1856841b4ee4be8fd1aba51011c12e9'
+        contractCreatorAddress:
+          type:
+          - string
+          - 'null'
+          description: Creator address of the contract if available.
+          example: null
+        risk_score:
+          type: integer
+          description: Internal numerical contract risk score.
+          example: 2
+        risk_status:
+          type: string
+          description: Qualitative risk classification based on internal scoring.
+          example: Low Risk
+        risk_indicators:
+          type: object
+          description: Static smart contract security indicators used during contract analysis.
+          properties:
+            is_honeypot:
+              type: integer
+              example: 0
+            honeypot_with_same_creator:
+              type: integer
+              example: 0
+            can_take_back_ownership:
+              type: integer
+              example: 0
+            is_mintable:
+              type: integer
+              example: 0
+            hidden_owner:
+              type: integer
+              example: 0
+            buy_tax:
+              type: integer
+              example: 0
+            sell_tax:
+              type: integer
+              example: 0
+            cannot_buy:
+              type: integer
+              example: 0
+            cannot_sell_all:
+              type: integer
+              example: 0
+            is_blacklisted:
+              type: integer
+              example: 0
+            is_whitelisted:
+              type: integer
+              example: 0
+            creator_percent:
+              type: integer
+              example: 0
+            lp_holders_locked:
+              type: boolean
+              example: false
+            liquidity:
+              type: number
+              format: float
+              description: Current liquidity amount in base token.
+              example: 14.38
+            market_cap:
+              type: number
+              description: Estimated token market capitalization.
+              example: 2062
+            is_in_dex:
+              type: integer
+              example: 1
+            slippage_modifiable:
+              type: integer
+              example: 0
+            transfer_pausable:
+              type: integer
+              example: 0
+            is_anti_whale:
+              type: integer
+              example: 0
+            anti_whale_modifiable:
+              type: integer
+              example: 0
+            trading_cooldown:
+              type: integer
+              example: 0
+            personal_slippage_modifiable:
+              type: integer
+              example: 0
+            is_open_source:
+              type: integer
+              example: 1
+            is_proxy:
+              type: integer
+              example: 0
+            owner_address:
+              type: string
+              example: ''
+            owner_change_balance:
+              type: integer
+              example: 0
+            selfdestruct:
+              type: integer
+              example: 0
+            external_call:
+              type: integer
+              example: 0
+            gas_abuse:
+              type: integer
+              example: 0
+        liquidityEvent:
+          type: array
+          description: Recent liquidity-related events associated with the token pool.
+          items:
+            type: object
+            properties:
+              eventType:
+                type: string
+                example: remove
+              amount:
+                type: number
+                format: float
+                example: 1.60228
+              token:
+                type: string
+                example: wbnb
+              tx_hash:
+                type: string
+                example: '0xed0a492f9e8021fd74a950237703ea0047223b4bd4c032810e02734c407e624a'
+              from_address:
+                type: string
+                example: '0x983fd7447391bae599ac38ea06cd9d60c89fbb66'
+              from_fraud_probability:
+                type: number
+                format: float
+                example: 1
+              from_fraud_status:
+                type: string
+                example: Fraud
+              createdAt:
+                type: string
+                format: date-time
+                example: '2026-01-02T11:31:22.000Z'
+        status:
+          type: string
+          description: Overall fraud classification of the contract.
+          enum:
+          - Not Fraud
+          - Fraud
+          example: Fraud
+        probabilityFraud:
+          type: number
+          format: float
+          description: Fraud probability score between 0.00 and 1.00.
+          example: 0.8350795507
+        chain:
+          type: string
+          description: Blockchain network identifier.
+          example: BNB
+        lastChecked:
+          type: string
+          format: date-time
+          description: Last analysis execution timestamp.
+          example: '2026-02-14T13:57:01.000Z'
+        contractCreationTime:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Smart contract deployment timestamp if available.
+          example: null
+        forensic_details:
+          type: object
+          description: Dynamic forensic indicators contributing to fraud probability.
+          properties:
+            owner:
+              type: object
+            privilege_withdraw:
+              type: integer
+              example: 0
+            withdraw_missing:
+              type: integer
+              example: 0
+            is_open_source:
+              type: integer
+              example: 1
+            blacklist:
+              type: integer
+              example: 0
+            contract_name:
+              type: string
+              example: PAPUToken
+            selfdestruct:
+              type: integer
+              example: 0
+            is_proxy:
+              type: integer
+              example: 0
+            approval_abuse:
+              type: integer
+              example: 0
+        checked_times:
+          type: integer
+          description: Number of times this contract has been analyzed.
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          description: Record creation timestamp.
+          example: '2024-05-31T00:42:51.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Most recent record update timestamp.
+          example: '2026-03-03T10:44:35.000Z'
+    FraudCheckRequestBody:
+      type: object
+      required:
+      - network
+      - walletAddress
+      properties:
+        network:
+          type: string
+          description: Blockchain network to query.
+          enum:
+          - ETH
+          - BNB
+          - POLYGON
+          - TON
+          - BASE
+          - TRON
+          - HAQQ
+          example: ETH
+        walletAddress:
+          type: string
+          description: The wallet address to screen.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+        calculate:
+          type: boolean
+          description: Boolean indicating whether to perform a full realtime recalculation
+          example: false
+    FraudCheckResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Result status message.
+          example: Success
+        walletAddress:
+          type: string
+          description: Blockchain wallet address analyzed.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+        chain:
+          type: string
+          description: Blockchain network identifier.
+          example: ETH
+        status:
+          type: string
+          description: Risk classification of the wallet.
+          enum:
+          - Not Fraud
+          - Fraud
+          - New Address
+          example: Not Fraud
+        probabilityFraud:
+          type: string
+          description: Fraud probability score between 0.00 and 1.00, returned as string to preserve precision.
+          example: '0.0421858616'
+        token:
+          type:
+          - string
+          - 'null'
+          description: Optional token associated with the wallet analysis.
+          example: null
+        lastChecked:
+          type: string
+          format: date-time
+          description: Last time the wallet fraud analysis was executed.
+          example: '2026-02-20T14:05:17.000Z'
+        forensic_details:
+          type: object
+          description: Forensic indicators contributing to fraud classification.
+          properties:
+            cybercrime:
+              type: string
+              example: '0'
+            money_laundering:
+              type: string
+              example: '0'
+            number_of_malicious_contracts_created:
+              type: string
+              example: '0'
+            gas_abuse:
+              type: string
+              example: '0'
+            financial_crime:
+              type: string
+              example: '0'
+            darkweb_transactions:
+              type: string
+              example: '0'
+            reinit:
+              type: string
+              example: '0'
+            phishing_activities:
+              type: string
+              example: '0'
+            fake_kyc:
+              type: string
+              example: '0'
+            blacklist_doubt:
+              type: string
+              example: '0'
+            fake_standard_interface:
+              type: string
+              example: '0'
+            data_source:
+              type: string
+              example: ''
+            stealing_attack:
+              type: string
+              example: '0'
+            blackmail_activities:
+              type: string
+              example: '0'
+            sanctioned:
+              type: string
+              example: '0'
+            malicious_mining_activities:
+              type: string
+              example: '0'
+            mixer:
+              type: string
+              example: '0'
+            fake_token:
+              type: string
+              example: '0'
+            honeypot_related_address:
+              type: string
+              example: '0'
+        checked_times:
+          type: integer
+          description: Number of times this wallet has been analyzed.
+          example: 2134
+        createdAt:
+          type: string
+          format: date-time
+          description: Record creation timestamp.
+          example: '2023-10-12T11:46:55.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp.
+          example: '2026-03-09T12:45:19.000Z'
+        sanctionData:
+          type: array
+          description: Sanctions intelligence associated with this wallet.
+          items:
+            type: object
+            properties:
+              category:
+                type:
+                - string
+                - 'null'
+                example: null
+              name:
+                type:
+                - string
+                - 'null'
+                example: null
+              description:
+                type:
+                - string
+                - 'null'
+                example: null
+              url:
+                type:
+                - string
+                - 'null'
+                example: null
+              isSanctioned:
+                type: boolean
+                example: false
+              createdAt:
+                type: string
+                format: date-time
+                example: '2026-03-09T12:45:19.000Z'
+              updatedAt:
+                type: string
+                format: date-time
+                example: '2026-03-09T12:45:19.000Z'
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your ChainAware API key. Available at chainaware.ai/profile. Keep it private — do not expose it in client-side code or public repositories.

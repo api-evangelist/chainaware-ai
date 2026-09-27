@@ -1,0 +1,99 @@
+openapi: 3.2.0
+info:
+  title: ChainAware Enterprise Credit Score API
+  version: 1.0.2
+  description: AI-powered fraud detection, wallet auditing, rug pull screening, user segmentation, and credit scoring for DeFi protocols.
+servers:
+- url: https://enterprise.api.chainaware.ai/
+security:
+- ApiKeyAuth: []
+tags:
+- name: Credit Score API
+paths:
+  /users/credit-score:
+    post:
+      summary: Get AI-driven crypto trust score for a wallet address
+      description: 'Returns an AI-driven crypto trust score (1–9) for any wallet address, combining on-chain inflow/outflow analysis, fraud probability, and social graph signals. Designed for DeFi lending protocols that need to differentiate reliable borrowers from high-risk wallets before originating loans — without requiring identity data.
+
+
+        **Response latency:** under 100ms.
+
+
+        **Subscription:** Enterprise.
+
+
+        **Supported networks:** `ETH`, `BNB`, `POLYGON`, `TON`, `BASE`, `HAQQ`.
+
+
+        **Further reading:** Credit Score Guide'
+      tags:
+      - Credit Score API
+      responses:
+        '200':
+          description: Credit score result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditScoreResponse'
+        '400':
+          description: Bad request — missing or invalid fields in the request body
+        '401':
+          description: Unauthorised — API key missing or invalid
+        '404':
+          description: Wallet not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditScoreRequestBody'
+        required: true
+      operationId: postUsersCreditScore
+      x-operation-id-source: derived
+components:
+  schemas:
+    CreditScoreRequestBody:
+      type: object
+      required:
+      - network
+      - walletAddress
+      properties:
+        network:
+          type: string
+          description: Blockchain network to query.
+          enum:
+          - ETH
+          example: ETH
+        walletAddress:
+          type: string
+          description: The wallet address to score.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+    CreditScoreResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Result status message.
+          example: Success
+        creditData:
+          type: object
+          properties:
+            walletAddress:
+              type: string
+              description: The queried wallet address.
+              example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+            riskRating:
+              type: integer
+              description: 'AI-driven crypto trust score from 1 (lowest trust) to 9 (highest trust). Combines on-chain inflow/outflow analysis, fraud probability, and social graph signals. Score guidance: 8–9 high trust, 6–7 above average, 4–5 average, 2–3 below average, 1 low trust.'
+              minimum: 1
+              maximum: 9
+              example: 7
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your ChainAware API key. Available at chainaware.ai/profile. Keep it private — do not expose it in client-side code or public repositories.

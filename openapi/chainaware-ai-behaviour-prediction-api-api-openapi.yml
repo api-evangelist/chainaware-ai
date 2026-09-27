@@ -1,0 +1,624 @@
+openapi: 3.2.0
+info:
+  title: ChainAware Enterprise Behaviour Prediction API
+  version: 1.0.2
+  description: AI-powered fraud detection, wallet auditing, rug pull screening, user segmentation, and credit scoring for DeFi protocols.
+servers:
+- url: https://enterprise.api.chainaware.ai/
+security:
+- ApiKeyAuth: []
+tags:
+- name: Behaviour Prediction API
+paths:
+  /fraud/audit:
+    post:
+      summary: Full behavioural profile and intent prediction for a wallet address
+      description: 'Profiles a wallet''s complete on-chain history and predicts what it is likely to do next. Returns wallet categorisation, experience level, intent probabilities, personalisation recommendations, protocol history, and risk profiling.
+
+
+        Use this endpoint to personalise a user''s onboarding journey, route wallets to the right product flow, or conduct targeted segmentation.
+
+
+        **Subscription:** Business or Enterprise.
+
+
+        **Supported networks:** `ETH`, `BNB`, `BASE`, `HAQQ`, `SOLANA`.
+
+
+        **Further reading:** Web3 Behavioral User Analytics Guide'
+      tags:
+      - Behaviour Prediction API
+      responses:
+        '200':
+          description: Wallet behavioural profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletAuditResponse'
+        '400':
+          description: Bad request — missing or invalid fields in the request body
+        '401':
+          description: Unauthorised — API key missing or invalid
+        '404':
+          description: Wallet not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletAuditRequestBody'
+        required: true
+      operationId: postFraudAudit
+      x-operation-id-source: derived
+  /segmentation/wallet-segment:
+    post:
+      summary: Get wallet behaviour segment and quality score
+      description: 'Classifies a wallet address into a quality segment (A, B, or C) based on its on-chain behaviour history, and returns a 0–100 quality score for finer-grained ranking.
+
+
+        Use this endpoint to distinguish high-value users from low-value or low-intent users at the moment they connect to your protocol — without requiring any off-chain identity data.
+
+
+        **Subscription:** Enterprise.
+
+
+        **Supported networks:** `ETH`, `BNB`, `BASE`, `HAQQ`, `SOLANA` .
+
+
+        **Further reading:** Web3 Behavioral User Analytics Guide'
+      tags:
+      - Behaviour Prediction API
+      responses:
+        '200':
+          description: Wallet segment and quality score
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletSegmentResponse'
+        '400':
+          description: Bad request — missing or invalid fields in the request body
+        '401':
+          description: Unauthorised — API key missing or invalid
+        '404':
+          description: Wallet not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletSegmentRequestBody'
+        required: true
+      operationId: postSegmentationWalletSegment
+      x-operation-id-source: derived
+components:
+  schemas:
+    WalletSegmentRequestBody:
+      type: object
+      required:
+      - walletAddress
+      - network
+      properties:
+        walletAddress:
+          type: string
+          description: The wallet address to classify.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+        network:
+          type: string
+          description: Blockchain network to query.
+          enum:
+          - ETH
+          - BNB
+          - BASE
+          - HAQQ
+          - SOLANA
+          example: ETH
+    WalletAuditRequestBody:
+      type: object
+      required:
+      - network
+      - walletAddress
+      properties:
+        network:
+          type: string
+          description: Blockchain network to query.
+          enum:
+          - ETH
+          - BNB
+          - BASE
+          - HAQQ
+          - SOLANA
+          example: ETH
+        walletAddress:
+          type: string
+          description: The wallet address to profile.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+        calculate:
+          type: boolean
+          description: Boolean indicating whether to perform a full realtime recalculation
+          example: false
+    WalletSegmentResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Result status message.
+          example: Wallet segment retrieved
+        walletAddress:
+          type: string
+          description: Blockchain wallet address analyzed.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+        walletQuality:
+          type: integer
+          description: Calculated wallet quality score from 0 to 100 derived from segment, protocol diversity, balance history, and wallet behavior.
+          example: 87
+        categories:
+          type: array
+          description: Wallet activity categories grouped by interaction domain.
+          items:
+            type: object
+            properties:
+              Category:
+                type: string
+                example: DeFi
+              Count:
+                type: integer
+                example: 142
+        riskProfile:
+          type: array
+          description: Balance-age weighted willingness-to-take-risk indicators.
+          items:
+            type: object
+            properties:
+              Category:
+                type: string
+                example: Risk_Profile
+              Balance_age:
+                type: number
+                format: float
+                example: 4
+        segmentInfo:
+          type: string
+          description: Serialized JSON containing protocol engagement flags used for segment classification.
+          example: '{"Maker":0,"Aave_borrow":0,"Aave_lend":1,"Lido":0,"Uniswap":1}'
+        experience:
+          type: object
+          description: Wallet experience score based on protocol depth and activity maturity.
+          properties:
+            Type:
+              type: string
+              example: Experience
+            Value:
+              type: integer
+              example: 10
+        intention:
+          type: object
+          description: Predicted next wallet actions.
+          properties:
+            Type:
+              type: string
+              example: Intentions
+            Value:
+              type: object
+              properties:
+                Prob_Lend:
+                  type: string
+                  example: High
+                Prob_Trade:
+                  type: string
+                  example: High
+                Prob_Game:
+                  type: string
+                  example: Medium
+                Prob_NFT:
+                  type: string
+                  example: Low
+                Prob_Stake_ETH:
+                  type: string
+                  example: Medium
+                Prob_Borrow:
+                  type: string
+                  example: Low
+                Prob_Gamble:
+                  type: string
+                  example: Low
+                Prob_Stake:
+                  type: string
+                  example: Medium
+                Prob_Yield_Farm:
+                  type: string
+                  example: Low
+                Prob_Leveraged_Stake:
+                  type: string
+                  example: Low
+                Prob_Leveraged_Stake_ETH:
+                  type: string
+                  example: Low
+                Prob_Leveraged_Lend:
+                  type: string
+                  example: Low
+                Prob_Leverage_Long_ETH:
+                  type: string
+                  example: Low
+                Prob_Leverage_Long:
+                  type: string
+                  example: Low
+        protocols:
+          type: array
+          description: Protocols the wallet has interacted with ordered by usage frequency.
+          items:
+            type: object
+            properties:
+              Protocol:
+                type: string
+                example: uniswap
+              Count:
+                type: integer
+                example: 34
+        userDetails:
+          type: object
+          description: Core wallet metrics used for segmentation.
+          properties:
+            wallet_age_days:
+              type: integer
+              example: 3798
+            total_balance_usd:
+              type: number
+              format: float
+              example: 104859.49
+            transaction_count:
+              type: integer
+              example: 19972
+            wallet_rank:
+              type: integer
+              example: 20042
+        recommendation:
+          type: object
+          description: Product fit or engagement recommendations based on wallet segment.
+          properties:
+            Type:
+              type: string
+              example: Recommendation
+            Value:
+              type: array
+              items:
+                type: string
+              example:
+              - WBTC holding
+              - ETH holding
+              - Stablecoin lending
+        sanctionData:
+          type: array
+          description: Sanctions screening associated with this wallet.
+          items:
+            type: object
+            properties:
+              category:
+                type:
+                - string
+                - 'null'
+                example: null
+              name:
+                type:
+                - string
+                - 'null'
+                example: null
+              description:
+                type:
+                - string
+                - 'null'
+                example: null
+              url:
+                type:
+                - string
+                - 'null'
+                example: null
+              isSanctioned:
+                type: boolean
+                example: false
+              createdAt:
+                type: string
+                format: date-time
+                example: '2026-03-12T16:01:18.000Z'
+              updatedAt:
+                type: string
+                format: date-time
+                example: '2026-03-12T16:01:18.000Z'
+    WalletAuditResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Result status message.
+          example: Success
+        walletAddress:
+          type: string
+          description: Blockchain wallet address analyzed.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+        status:
+          type: string
+          description: Fraud classification of the wallet.
+          enum:
+          - Not Fraud
+          - Fraud
+          - New Address
+          example: Not Fraud
+        probabilityFraud:
+          type: string
+          description: Fraud probability score between 0.00 and 1.00 returned as string for precision preservation.
+          example: '0.0421858616'
+        token:
+          type:
+          - string
+          - 'null'
+          description: Optional token context associated with the wallet analysis.
+          example: null
+        chain:
+          type: string
+          description: Blockchain network identifier.
+          example: ETH
+        lastChecked:
+          type: string
+          format: date-time
+          description: Last time the wallet analysis was executed.
+          example: '2026-02-20T14:05:17.000Z'
+        forensic_details:
+          type: object
+          description: Forensic indicators contributing to fraud scoring.
+          properties:
+            cybercrime:
+              type: string
+              example: '0'
+            money_laundering:
+              type: string
+              example: '0'
+            number_of_malicious_contracts_created:
+              type: string
+              example: '0'
+            gas_abuse:
+              type: string
+              example: '0'
+            financial_crime:
+              type: string
+              example: '0'
+            darkweb_transactions:
+              type: string
+              example: '0'
+            reinit:
+              type: string
+              example: '0'
+            phishing_activities:
+              type: string
+              example: '0'
+            fake_kyc:
+              type: string
+              example: '0'
+            blacklist_doubt:
+              type: string
+              example: '0'
+            fake_standard_interface:
+              type: string
+              example: '0'
+            data_source:
+              type: string
+              example: ''
+            stealing_attack:
+              type: string
+              example: '0'
+            blackmail_activities:
+              type: string
+              example: '0'
+            sanctioned:
+              type: string
+              example: '0'
+            malicious_mining_activities:
+              type: string
+              example: '0'
+            mixer:
+              type: string
+              example: '0'
+            fake_token:
+              type: string
+              example: '0'
+            honeypot_related_address:
+              type: string
+              example: '0'
+        categories:
+          type: array
+          description: Wallet activity categories grouped by behavioral domain.
+          items:
+            type: object
+            properties:
+              Category:
+                type: string
+                example: DeFi
+              Count:
+                type: integer
+                example: 126
+        riskProfile:
+          type: array
+          description: Balance-age weighted exposure by category and risk distribution.
+          items:
+            type: object
+            properties:
+              Category:
+                type: string
+                example: Risk_Profile
+              Balance_age:
+                type: number
+                format: float
+                example: 3
+        segmentInfo:
+          type: string
+          description: Serialized JSON containing protocol engagement flags.
+          example: '{"Maker":0,"Aave_borrow":0,"Aave_lend":1,"Lido":0,"Uniswap":1}'
+        experience:
+          type: object
+          description: Wallet experience score derived from protocol diversity and longevity.
+          properties:
+            Type:
+              type: string
+              example: Experience
+            Value:
+              type: integer
+              example: 10
+        intention:
+          type: object
+          description: Predicted wallet behavioral intentions.
+          properties:
+            Type:
+              type: string
+              example: Intentions
+            Value:
+              type: object
+              properties:
+                Prob_Lend:
+                  type: string
+                  example: High
+                Prob_Trade:
+                  type: string
+                  example: High
+                Prob_Game:
+                  type: string
+                  example: Medium
+                Prob_NFT:
+                  type: string
+                  example: Medium
+                Prob_Stake_ETH:
+                  type: string
+                  example: Medium
+                Prob_Borrow:
+                  type: string
+                  example: Low
+                Prob_Gamble:
+                  type: string
+                  example: Low
+                Prob_Stake:
+                  type: string
+                  example: Low
+                Prob_Yield_Farm:
+                  type: string
+                  example: Low
+                Prob_Leveraged_Stake:
+                  type: string
+                  example: Low
+                Prob_Leveraged_Stake_ETH:
+                  type: string
+                  example: Low
+                Prob_Leveraged_Lend:
+                  type: string
+                  example: Low
+                Prob_Leverage_Long_ETH:
+                  type: string
+                  example: Low
+                Prob_Leverage_Long:
+                  type: string
+                  example: Low
+        protocols:
+          type: array
+          description: Protocols the wallet has interacted with.
+          items:
+            type: object
+            properties:
+              Protocol:
+                type: string
+                example: uniswap
+              Count:
+                type: integer
+                example: 25
+        userDetails:
+          type: object
+          description: Core wallet metrics.
+          properties:
+            wallet_age_days:
+              type: integer
+              example: 3798
+            total_balance_usd:
+              type: number
+              format: float
+              example: 104859.49
+            transaction_count:
+              type: integer
+              example: 19972
+            wallet_rank:
+              type: integer
+              example: 20042
+        riskCapability:
+          type: integer
+          description: Wallet risk capability score.
+          example: 5
+        recommendation:
+          type: object
+          description: Recommended investment or product fit suggestions.
+          properties:
+            Type:
+              type: string
+              example: Recommendation
+            Value:
+              type: array
+              items:
+                type: string
+              example:
+              - WBTC holding
+              - ETH holding
+              - Stablecoin lending
+        checked_times:
+          type: integer
+          description: Number of times wallet analysis has been executed.
+          example: 2135
+        createdAt:
+          type: string
+          format: date-time
+          example: '2023-10-12T11:46:55.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-03-12T16:01:17.000Z'
+        sanctionData:
+          type: array
+          description: Sanctions intelligence associated with this wallet.
+          items:
+            type: object
+            properties:
+              category:
+                type:
+                - string
+                - 'null'
+                example: null
+              name:
+                type:
+                - string
+                - 'null'
+                example: null
+              description:
+                type:
+                - string
+                - 'null'
+                example: null
+              url:
+                type:
+                - string
+                - 'null'
+                example: null
+              isSanctioned:
+                type: boolean
+                example: false
+              createdAt:
+                type: string
+                format: date-time
+                example: '2026-03-12T16:01:18.000Z'
+              updatedAt:
+                type: string
+                format: date-time
+                example: '2026-03-12T16:01:18.000Z'
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your ChainAware API key. Available at chainaware.ai/profile. Keep it private — do not expose it in client-side code or public repositories.
