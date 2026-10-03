@@ -8,9 +8,7 @@
     "chainaware-ai-credit-score-api-api-openapi.yml",
     "chainaware-ai-fraud-api-api-openapi.yml"
   ],
-  "archived": [
-    "deleted 1 superseded output(s) from the previous generation"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
@@ -19,10 +17,11 @@
     "chainaware-ai-enterprise-api-swagger.json: declared missing tag: Behaviour Prediction API",
     "chainaware-ai-enterprise-api-swagger.json: declared missing tag: Credit Score API",
     "chainaware-ai-enterprise-api-swagger.json: declared missing tag: Fraud API",
-    "superseded outputs removed: chainaware-ai-enterprise-api-openapi.yml",
-    "apis.yml register: written (+3 apis, 5 total)"
+    "apis.yml register: already-registered"
   ],
   "skipped": [
-    "chainaware-ai-enterprise-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+    "chainaware-ai-behaviour-prediction-api-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "chainaware-ai-credit-score-api-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "chainaware-ai-fraud-api-api-openapi.yml: previously refined output, superseded by openapi/_original/"
   ]
 }

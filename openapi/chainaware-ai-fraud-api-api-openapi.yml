@@ -345,32 +345,6 @@ components:
           format: date-time
           description: Most recent record update timestamp.
           example: '2026-03-03T10:44:35.000Z'
-    FraudCheckRequestBody:
-      type: object
-      required:
-      - network
-      - walletAddress
-      properties:
-        network:
-          type: string
-          description: Blockchain network to query.
-          enum:
-          - ETH
-          - BNB
-          - POLYGON
-          - TON
-          - BASE
-          - TRON
-          - HAQQ
-          example: ETH
-        walletAddress:
-          type: string
-          description: The wallet address to screen.
-          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
-        calculate:
-          type: boolean
-          description: Boolean indicating whether to perform a full realtime recalculation
-          example: false
     FraudCheckResponse:
       type: object
       properties:
@@ -521,6 +495,32 @@ components:
                 type: string
                 format: date-time
                 example: '2026-03-09T12:45:19.000Z'
+    FraudCheckRequestBody:
+      type: object
+      required:
+      - network
+      - walletAddress
+      properties:
+        network:
+          type: string
+          description: Blockchain network to query.
+          enum:
+          - ETH
+          - BNB
+          - POLYGON
+          - TON
+          - BASE
+          - TRON
+          - HAQQ
+          example: ETH
+        walletAddress:
+          type: string
+          description: The wallet address to screen.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+        calculate:
+          type: boolean
+          description: Boolean indicating whether to perform a full realtime recalculation
+          example: false
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
