@@ -98,25 +98,156 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    RugPullRequestBody:
+    FraudCheckResponse:
       type: object
-      required:
-      - network
-      - walletAddress
       properties:
-        network:
+        message:
           type: string
-          description: Blockchain network to query.
-          enum:
-          - ETH
-          - BNB
-          - BASE
-          - HAQQ
-          example: ETH
+          description: Result status message.
+          example: Success
         walletAddress:
           type: string
-          description: The smart contract or liquidity pool address to screen. To check a wallet address instead, use `/fraud/check`.
-          example: 0xContractAddressHere
+          description: Blockchain wallet address analyzed.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+        chain:
+          type: string
+          description: Blockchain network identifier.
+          example: ETH
+        status:
+          type: string
+          description: Risk classification of the wallet.
+          enum:
+          - Not Fraud
+          - Fraud
+          - New Address
+          example: Not Fraud
+        probabilityFraud:
+          type: string
+          description: Fraud probability score between 0.00 and 1.00, returned as string to preserve precision.
+          example: '0.0421858616'
+        token:
+          type:
+          - string
+          - 'null'
+          description: Optional token associated with the wallet analysis.
+          example: null
+        lastChecked:
+          type: string
+          format: date-time
+          description: Last time the wallet fraud analysis was executed.
+          example: '2026-02-20T14:05:17.000Z'
+        forensic_details:
+          type: object
+          description: Forensic indicators contributing to fraud classification.
+          properties:
+            cybercrime:
+              type: string
+              example: '0'
+            money_laundering:
+              type: string
+              example: '0'
+            number_of_malicious_contracts_created:
+              type: string
+              example: '0'
+            gas_abuse:
+              type: string
+              example: '0'
+            financial_crime:
+              type: string
+              example: '0'
+            darkweb_transactions:
+              type: string
+              example: '0'
+            reinit:
+              type: string
+              example: '0'
+            phishing_activities:
+              type: string
+              example: '0'
+            fake_kyc:
+              type: string
+              example: '0'
+            blacklist_doubt:
+              type: string
+              example: '0'
+            fake_standard_interface:
+              type: string
+              example: '0'
+            data_source:
+              type: string
+              example: ''
+            stealing_attack:
+              type: string
+              example: '0'
+            blackmail_activities:
+              type: string
+              example: '0'
+            sanctioned:
+              type: string
+              example: '0'
+            malicious_mining_activities:
+              type: string
+              example: '0'
+            mixer:
+              type: string
+              example: '0'
+            fake_token:
+              type: string
+              example: '0'
+            honeypot_related_address:
+              type: string
+              example: '0'
+        checked_times:
+          type: integer
+          description: Number of times this wallet has been analyzed.
+          example: 2134
+        createdAt:
+          type: string
+          format: date-time
+          description: Record creation timestamp.
+          example: '2023-10-12T11:46:55.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp.
+          example: '2026-03-09T12:45:19.000Z'
+        sanctionData:
+          type: array
+          description: Sanctions intelligence associated with this wallet.
+          items:
+            type: object
+            properties:
+              category:
+                type:
+                - string
+                - 'null'
+                example: null
+              name:
+                type:
+                - string
+                - 'null'
+                example: null
+              description:
+                type:
+                - string
+                - 'null'
+                example: null
+              url:
+                type:
+                - string
+                - 'null'
+                example: null
+              isSanctioned:
+                type: boolean
+                example: false
+              createdAt:
+                type: string
+                format: date-time
+                example: '2026-03-09T12:45:19.000Z'
+              updatedAt:
+                type: string
+                format: date-time
+                example: '2026-03-09T12:45:19.000Z'
     RugPullResponse:
       type: object
       properties:
@@ -345,156 +476,25 @@ components:
           format: date-time
           description: Most recent record update timestamp.
           example: '2026-03-03T10:44:35.000Z'
-    FraudCheckResponse:
+    RugPullRequestBody:
       type: object
+      required:
+      - network
+      - walletAddress
       properties:
-        message:
+        network:
           type: string
-          description: Result status message.
-          example: Success
+          description: Blockchain network to query.
+          enum:
+          - ETH
+          - BNB
+          - BASE
+          - HAQQ
+          example: ETH
         walletAddress:
           type: string
-          description: Blockchain wallet address analyzed.
-          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
-        chain:
-          type: string
-          description: Blockchain network identifier.
-          example: ETH
-        status:
-          type: string
-          description: Risk classification of the wallet.
-          enum:
-          - Not Fraud
-          - Fraud
-          - New Address
-          example: Not Fraud
-        probabilityFraud:
-          type: string
-          description: Fraud probability score between 0.00 and 1.00, returned as string to preserve precision.
-          example: '0.0421858616'
-        token:
-          type:
-          - string
-          - 'null'
-          description: Optional token associated with the wallet analysis.
-          example: null
-        lastChecked:
-          type: string
-          format: date-time
-          description: Last time the wallet fraud analysis was executed.
-          example: '2026-02-20T14:05:17.000Z'
-        forensic_details:
-          type: object
-          description: Forensic indicators contributing to fraud classification.
-          properties:
-            cybercrime:
-              type: string
-              example: '0'
-            money_laundering:
-              type: string
-              example: '0'
-            number_of_malicious_contracts_created:
-              type: string
-              example: '0'
-            gas_abuse:
-              type: string
-              example: '0'
-            financial_crime:
-              type: string
-              example: '0'
-            darkweb_transactions:
-              type: string
-              example: '0'
-            reinit:
-              type: string
-              example: '0'
-            phishing_activities:
-              type: string
-              example: '0'
-            fake_kyc:
-              type: string
-              example: '0'
-            blacklist_doubt:
-              type: string
-              example: '0'
-            fake_standard_interface:
-              type: string
-              example: '0'
-            data_source:
-              type: string
-              example: ''
-            stealing_attack:
-              type: string
-              example: '0'
-            blackmail_activities:
-              type: string
-              example: '0'
-            sanctioned:
-              type: string
-              example: '0'
-            malicious_mining_activities:
-              type: string
-              example: '0'
-            mixer:
-              type: string
-              example: '0'
-            fake_token:
-              type: string
-              example: '0'
-            honeypot_related_address:
-              type: string
-              example: '0'
-        checked_times:
-          type: integer
-          description: Number of times this wallet has been analyzed.
-          example: 2134
-        createdAt:
-          type: string
-          format: date-time
-          description: Record creation timestamp.
-          example: '2023-10-12T11:46:55.000Z'
-        updatedAt:
-          type: string
-          format: date-time
-          description: Last update timestamp.
-          example: '2026-03-09T12:45:19.000Z'
-        sanctionData:
-          type: array
-          description: Sanctions intelligence associated with this wallet.
-          items:
-            type: object
-            properties:
-              category:
-                type:
-                - string
-                - 'null'
-                example: null
-              name:
-                type:
-                - string
-                - 'null'
-                example: null
-              description:
-                type:
-                - string
-                - 'null'
-                example: null
-              url:
-                type:
-                - string
-                - 'null'
-                example: null
-              isSanctioned:
-                type: boolean
-                example: false
-              createdAt:
-                type: string
-                format: date-time
-                example: '2026-03-09T12:45:19.000Z'
-              updatedAt:
-                type: string
-                format: date-time
-                example: '2026-03-09T12:45:19.000Z'
+          description: The smart contract or liquidity pool address to screen. To check a wallet address instead, use `/fraud/check`.
+          example: 0xContractAddressHere
     FraudCheckRequestBody:
       type: object
       required:

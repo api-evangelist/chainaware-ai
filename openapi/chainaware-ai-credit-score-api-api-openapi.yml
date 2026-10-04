@@ -55,6 +55,22 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    CreditScoreRequestBody:
+      type: object
+      required:
+      - network
+      - walletAddress
+      properties:
+        network:
+          type: string
+          description: Blockchain network to query.
+          enum:
+          - ETH
+          example: ETH
+        walletAddress:
+          type: string
+          description: The wallet address to score.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
     CreditScoreResponse:
       type: object
       properties:
@@ -75,22 +91,6 @@ components:
               minimum: 1
               maximum: 9
               example: 7
-    CreditScoreRequestBody:
-      type: object
-      required:
-      - network
-      - walletAddress
-      properties:
-        network:
-          type: string
-          description: Blockchain network to query.
-          enum:
-          - ETH
-          example: ETH
-        walletAddress:
-          type: string
-          description: The wallet address to score.
-          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

@@ -98,30 +98,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    WalletAuditRequestBody:
-      type: object
-      required:
-      - network
-      - walletAddress
-      properties:
-        network:
-          type: string
-          description: Blockchain network to query.
-          enum:
-          - ETH
-          - BNB
-          - BASE
-          - HAQQ
-          - SOLANA
-          example: ETH
-        walletAddress:
-          type: string
-          description: The wallet address to profile.
-          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
-        calculate:
-          type: boolean
-          description: Boolean indicating whether to perform a full realtime recalculation
-          example: false
     WalletAuditResponse:
       type: object
       properties:
@@ -409,26 +385,6 @@ components:
                 type: string
                 format: date-time
                 example: '2026-03-12T16:01:18.000Z'
-    WalletSegmentRequestBody:
-      type: object
-      required:
-      - walletAddress
-      - network
-      properties:
-        walletAddress:
-          type: string
-          description: The wallet address to classify.
-          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
-        network:
-          type: string
-          description: Blockchain network to query.
-          enum:
-          - ETH
-          - BNB
-          - BASE
-          - HAQQ
-          - SOLANA
-          example: ETH
     WalletSegmentResponse:
       type: object
       properties:
@@ -616,6 +572,50 @@ components:
                 type: string
                 format: date-time
                 example: '2026-03-12T16:01:18.000Z'
+    WalletSegmentRequestBody:
+      type: object
+      required:
+      - walletAddress
+      - network
+      properties:
+        walletAddress:
+          type: string
+          description: The wallet address to classify.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+        network:
+          type: string
+          description: Blockchain network to query.
+          enum:
+          - ETH
+          - BNB
+          - BASE
+          - HAQQ
+          - SOLANA
+          example: ETH
+    WalletAuditRequestBody:
+      type: object
+      required:
+      - network
+      - walletAddress
+      properties:
+        network:
+          type: string
+          description: Blockchain network to query.
+          enum:
+          - ETH
+          - BNB
+          - BASE
+          - HAQQ
+          - SOLANA
+          example: ETH
+        walletAddress:
+          type: string
+          description: The wallet address to profile.
+          example: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+        calculate:
+          type: boolean
+          description: Boolean indicating whether to perform a full realtime recalculation
+          example: false
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
