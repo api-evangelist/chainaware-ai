@@ -1,0 +1,12 @@
+{
+ "url": "https://swagger.chainaware.ai/swagger.json",
+ "requested_url": "https://swagger.chainaware.ai/swagger.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 44039,
+ "sha256": "a045ee3672fcfe01852621ca921745660ac3fb5e2a51e87351b2c9a20cdb7b53",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
