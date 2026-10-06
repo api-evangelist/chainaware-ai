@@ -35,7 +35,7 @@ x-tier-reason: enrichment pass 2026-09-19 (local-v3; was a2a-registry harvest st
 x-operator: Decentral Tech OÜ, reg. Nr. 14907413, Estonia (per https://chainaware.ai/terms/); IP held by Decentral Prediction Ltd. (BVI)
 specificationVersion: '0.20'
 created: '2026-09-19'
-modified: '2026-09-19'
+modified: '2026-10-06'
 tags:
 - Blockchain
 - Web3
@@ -199,6 +199,10 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- url: https://chainaware.ai/news/
+  type: Blog
+- url: https://chainaware.ai/blog/topics/news/feed/
+  type: BlogRSS
 - type: Overlay
   url: overlays/chainaware-ai-enterprise-api-overlay.yaml
 - type: DomainSecurity
