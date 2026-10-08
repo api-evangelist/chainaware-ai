@@ -58,3 +58,36 @@ plans:
 probes:
 - {url: 'https://chainaware.ai/pricing', status: 200, bytes: 7355, note: SPA shell — human-readable only after JavaScript executes}
 - {url: 'https://api.chainaware.ai/api/capabilities', status: 200, note: machine-readable per-call pricing}
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - subscription
+  units: []
+  plans:
+  - name: Free individual tools and MCP discovery
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods: []
+  - name: x402 pay-per-call
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - other
+  - name: Business subscription
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
+  - name: Enterprise subscription
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
