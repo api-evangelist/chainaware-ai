@@ -1,24 +1,17 @@
-generated: '2026-09-19'
+generated: '2026-09-23'
 method: generated
 source: openapi/chainaware-ai-enterprise-api-openapi.yml
 description: Recommended x-agentic-access execution contracts, classified heuristically from
   the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
   audience per deployment. See research/curity/agentic-governance/.
-curation_note: >-
-  Heuristic caveat (API Evangelist, 2026-09-19): the classifier treats every POST as an acting/write
-  operation, but all five ChainAware operations are POST-bodied READS — each computes or returns a cached
-  score for an address and mutates nothing on the caller's behalf (docs: "All endpoints operate in real
-  time against on-chain data"; see conventions/chainaware-ai-conventions.yml reversibility: na). A
-  deployment binding these contracts should treat them as connected/read with the 3600 s TTL ceiling; the
-  only real side effects on ChainAware's surfaces are the MCP batch-job and token-audit queueing tools, which
-  this file does not cover because no OpenAPI describes them. The per-call x402 cost ($0.15 USDC) is the
-  consequence worth gating, not a state change.
 summary:
   operations: 5
   by_action_class:
-    acting: 5
+    acting: 3
+    connected: 2
   by_consequence:
-    write: 5
+    write: 3
+    read: 2
   human_in_the_loop_required: 0
 operations:
 - path: /fraud/check
@@ -73,31 +66,19 @@ operations:
   method: post
   operationId: getWalletSegment
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
+    action-class: connected
+    consequence: read
+    subject: optional
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /users/credit-score
   method: post
   operationId: getCreditScore
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
+    action-class: connected
+    consequence: read
+    subject: optional
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
