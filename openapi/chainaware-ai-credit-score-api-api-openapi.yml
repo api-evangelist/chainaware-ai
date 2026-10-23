@@ -97,3 +97,9 @@ components:
       in: header
       name: x-api-key
       description: Your ChainAware API key. Available at chainaware.ai/profile. Keep it private — do not expose it in client-side code or public repositories.
+x-provenance:
+  method: harvested
+  publisher: ChainAware.ai
+  source: https://swagger.chainaware.ai/swagger.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
