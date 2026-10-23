@@ -5,7 +5,7 @@
       "source": "https://chainaware.ai/news/",
       "feed_url": "https://chainaware.ai/blog/topics/news/feed/index.xml",
       "title": "",
-      "saved": 7,
+      "saved": 0,
       "method": "discovered"
     },
     {
@@ -23,6 +23,13 @@
       "method": "none"
     },
     {
+      "source": "https://chainaware.ai/blog/topics/news/feed/index.xml",
+      "feed_url": "https://chainaware.ai/blog/topics/news/feed/index.xml",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
+    },
+    {
       "source": "https://chainaware.ai/support",
       "feed_url": "https://chainaware.ai/support",
       "title": "",
@@ -30,6 +37,6 @@
       "method": "none"
     }
   ],
-  "post_count": 7,
-  "fetched": "2026-10-10T13:15:00Z"
+  "post_count": 10,
+  "fetched": "2026-10-17T14:53:57Z"
 }
